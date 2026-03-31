@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS Processing — Commercial Real Estate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f4f7fb; --bg3: #e8eef5; --bg4: #dce5ef;
+    --border: #c8d8e8; --border2: #a8bfd4;
+    --gold: #b8860b; --gold2: #d4a017; --gold-dim: rgba(184,134,11,0.10);
+    --text: #1e4a72; --text2: #4a7a9b; --text3: #82aac0;
+    --green: #1e7e4a; --green-dim: rgba(30,126,74,0.10);
+    --red: #c0392b; --red-dim: rgba(192,57,43,0.09);
+    --blue: #2a5f8f; --blue-dim: rgba(42,95,143,0.10);
+    --orange: #c96a1a; --orange-dim: rgba(201,106,26,0.10);
+    --purple: #6a4c9c;
+    --radius: 4px; --shadow: 0 4px 24px rgba(42,95,143,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* LOGIN */
+  #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); position:relative; }
+  .login-grid-bg { position:absolute; inset:0; background-image:linear-gradient(rgba(42,95,143,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(42,95,143,0.06) 1px,transparent 1px); background-size:48px 48px; pointer-events:none; }
+  .login-glow { position:absolute; width:600px; height:600px; background:radial-gradient(circle,rgba(42,95,143,0.08) 0%,transparent 70%); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .login-card { position:relative; background:var(--bg2); border:1px solid var(--border); border-top:4px solid var(--blue); padding:48px; width:440px; box-shadow:var(--shadow),0 0 60px rgba(42,95,143,0.08); }
+  .login-logo { text-align:center; margin-bottom:6px; line-height:1; }
+  .login-tagline { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--text3); margin-bottom:36px; text-transform:uppercase; text-align:center; }
+  .login-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; display:block; margin-bottom:8px; }
+  .login-select { width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:12px 16px; font-family:'Syne',sans-serif; font-size:14px; margin-bottom:24px; appearance:none; cursor:pointer; transition:border-color 0.2s; outline:none; }
+  .login-select:focus { border-color:var(--gold); }
+  .login-input { width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:12px 16px; font-family:'Syne',sans-serif; font-size:14px; margin-bottom:32px; outline:none; transition:border-color 0.2s; }
+  .login-input:focus { border-color:var(--gold); }
+  .login-input::placeholder { color:var(--text3); }
+  .login-btn { width:100%; background:var(--blue); color:#fff; border:none; padding:14px; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:background 0.2s,transform 0.1s; }
+  .login-btn:hover { background:var(--text); }
+  .login-btn:active { transform:scale(0.99); }
+  .login-hint { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); margin-top:20px; text-align:center; }
+  .login-error { font-family:'DM Mono',monospace; font-size:11px; color:var(--red); text-align:center; margin-bottom:16px; min-height:16px; }
+
+  /* APP */
+  #app { display:none; min-height:100vh; flex-direction:column; }
+  #app.visible { display:flex; }
+
+  /* TOPBAR */
+  .topbar { background:var(--bg2); border-bottom:1px solid var(--border); padding:0 32px; height:60px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .topbar-left { display:flex; align-items:center; gap:32px; }
+  .topbar-logo { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; letter-spacing:1px; color:var(--blue); text-transform:uppercase; }
+  .topbar-nav { display:flex; gap:2px; }
+  .nav-btn { background:transparent; border:none; color:var(--text3); padding:8px 16px; font-family:'Syne',sans-serif; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; transition:color 0.2s,background 0.2s; border-radius:var(--radius); }
+  .nav-btn:hover { color:var(--text); background:var(--bg3); }
+  .nav-btn.active { color:var(--gold); background:var(--gold-dim); }
+  .topbar-right { display:flex; align-items:center; gap:16px; }
+  .user-badge { display:flex; align-items:center; gap:10px; }
+  .user-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:12px; font-weight:500; background:var(--gold-dim); border:1px solid var(--gold); color:var(--gold); }
+  .user-name { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); }
+  .manager-tag { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(201,168,76,0.3); padding:2px 8px; text-transform:uppercase; }
+  .logout-btn { background:transparent; border:1px solid var(--border); color:var(--text3); padding:6px 14px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all 0.2s; }
+  .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+  /* CONTENT */
+  .content { flex:1; padding:28px 32px; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .stat-card { background:var(--bg2); border:1px solid var(--border); padding:20px 24px; position:relative; overflow:hidden; }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .stat-card.gold::before { background:var(--gold); }
+  .stat-card.green::before { background:var(--green); }
+  .stat-card.blue::before { background:var(--blue); }
+  .stat-card.orange::before { background:var(--orange); }
+  .stat-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; margin-bottom:10px; }
+  .stat-value { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:300; line-height:1; margin-bottom:4px; }
+  .stat-card.gold .stat-value { color:var(--gold); }
+  .stat-card.green .stat-value { color:var(--green); }
+  .stat-card.blue .stat-value { color:var(--blue); }
+  .stat-card.orange .stat-value { color:var(--orange); }
+  .stat-sub { font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); }
+
+  /* SECTION */
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .section-title { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--text3); text-transform:uppercase; }
+  .add-btn { background:var(--gold); color:#0d0f11; border:none; padding:8px 20px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:background 0.2s; }
+  .add-btn:hover { background:var(--gold2); }
+
+  /* FILTERS */
+  .filters { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+  .filter-chip { background:var(--bg3); border:1px solid var(--border); color:var(--text2); padding:6px 14px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all 0.2s; }
+  .filter-chip:hover,.filter-chip.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+  .search-input { background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:7px 14px; font-family:'DM Mono',monospace; font-size:12px; outline:none; transition:border-color 0.2s; width:220px; margin-left:auto; }
+  .search-input:focus { border-color:var(--gold); }
+  .search-input::placeholder { color:var(--text3); }
+
+  /* TABLE */
+  .table-wrap { overflow-x:auto; }
+  .pipeline-table { width:100%; border-collapse:collapse; background:var(--bg2); border:1px solid var(--border); min-width:1200px; }
+  .pipeline-table th { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; padding:11px 14px; text-align:left; border-bottom:1px solid var(--border); background:var(--bg3); white-space:nowrap; }
+  .pipeline-table td { padding:11px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  .pipeline-table tr:last-child td { border-bottom:none; }
+  .pipeline-table tbody tr { transition:background 0.15s; cursor:pointer; }
+  .pipeline-table tbody tr:hover { background:var(--bg3); }
+  .client-name { font-weight:600; color:var(--text); }
+  .rent-val { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:400; color:var(--gold); }
+  .fee-val { font-family:'DM Mono',monospace; font-size:11px; color:var(--green); }
+  .mono-sm { font-family:'DM Mono',monospace; font-size:11px; color:var(--text2); }
+  .mono-dim { font-family:'DM Mono',monospace; font-size:11px; color:var(--text3); }
+
+  /* BADGES */
+  .badge { display:inline-block; padding:3px 10px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; border-radius:2px; white-space:nowrap; }
+  .badge-prospect  { background:var(--blue-dim); color:var(--blue); border:1px solid rgba(91,141,238,0.3); }
+  .badge-loi       { background:var(--orange-dim); color:var(--orange); border:1px solid rgba(232,136,74,0.3); }
+  .badge-lease     { background:rgba(155,110,224,0.15); color:var(--purple); border:1px solid rgba(155,110,224,0.3); }
+  .badge-executed  { background:var(--green-dim); color:var(--green); border:1px solid rgba(61,186,126,0.3); }
+  .badge-dead      { background:var(--red-dim); color:var(--red); border:1px solid rgba(224,92,92,0.3); }
+  .agree-yes { display:inline-block; padding:2px 8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; background:var(--green-dim); color:var(--green); border:1px solid rgba(61,186,126,0.3); border-radius:2px; }
+  .agree-no  { display:inline-block; padding:2px 8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; background:var(--red-dim); color:var(--red); border:1px solid rgba(224,92,92,0.3); border-radius:2px; }
+
+  /* ACTIONS */
+  .action-btn { background:transparent; border:1px solid var(--border); color:var(--text3); padding:4px 9px; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; transition:all 0.2s; margin-right:3px; }
+  .action-btn:hover { border-color:var(--gold); color:var(--gold); }
+  .action-btn.danger:hover { border-color:var(--red); color:var(--red); }
+
+  /* BROKER OVERVIEW */
+  .broker-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
+  .broker-card { background:var(--bg2); border:1px solid var(--border); padding:20px; transition:border-color 0.2s; cursor:pointer; }
+  .broker-card:hover { border-color:var(--border2); }
+  .broker-card-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .broker-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:14px; font-weight:500; background:var(--bg3); border:1px solid var(--border2); color:var(--text2); flex-shrink:0; }
+  .broker-info-name { font-weight:600; font-size:15px; margin-bottom:2px; }
+  .broker-info-title { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:1px; }
+  .broker-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+  .broker-stat { background:var(--bg3); padding:10px; text-align:center; }
+  .broker-stat-val { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:var(--gold); display:block; }
+  .broker-stat-lbl { font-family:'DM Mono',monospace; font-size:9px; color:var(--text3); letter-spacing:1px; text-transform:uppercase; display:block; margin-top:2px; }
+  .broker-pipeline-mini { display:flex; gap:4px; height:4px; overflow:hidden; margin-bottom:10px; }
+  .broker-latest { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--bg2); border:1px solid var(--border2); padding:40px; width:660px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow); position:relative; }
+  .modal-title { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; color:var(--gold); margin-bottom:6px; }
+  .modal-sub { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:2px; margin-bottom:24px; }
+  .modal-close { position:absolute; top:16px; right:16px; background:transparent; border:none; color:var(--text3); font-size:20px; cursor:pointer; line-height:1; }
+  .modal-close:hover { color:var(--text); }
+  .form-section-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin:20px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .form-group { margin-bottom:14px; }
+  .form-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; display:block; margin-bottom:7px; }
+  .form-control { width:100%; background:var(--bg3); border:1px solid var(--border); color:var(--text); padding:9px 12px; font-family:'Syne',sans-serif; font-size:13px; outline:none; transition:border-color 0.2s; }
+  .form-control:focus { border-color:var(--gold); }
+  .form-control::placeholder { color:var(--text3); }
+  select.form-control { appearance:none; cursor:pointer; }
+  textarea.form-control { min-height:72px; resize:vertical; font-family:'DM Mono',monospace; font-size:12px; }
+  .modal-actions { display:flex; gap:12px; margin-top:28px; }
+  .btn-primary { background:var(--gold); color:#0d0f11; border:none; padding:11px 28px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:background 0.2s; }
+  .btn-primary:hover { background:var(--gold2); }
+  .btn-secondary { background:transparent; color:var(--text3); border:1px solid var(--border); padding:11px 28px; font-family:'Syne',sans-serif; font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+  .btn-secondary:hover { border-color:var(--text3); color:var(--text); }
+
+  /* DETAIL */
+  .detail-section { margin-bottom:22px; }
+  .detail-section-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .detail-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .detail-item-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; margin-bottom:5px; }
+  .detail-item-value { font-size:14px; color:var(--text); }
+  .detail-value-large { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--gold); }
+  .notes-box { background:var(--bg3); border:1px solid var(--border); padding:14px; font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); line-height:1.6; white-space:pre-wrap; min-height:50px; }
+
+
+  /* ANALYTICS PANELS */
+  .analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .analytics-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .analytics-panel { background:var(--bg2); border:1px solid var(--border); padding:18px; }
+  .analytics-panel-fixed { height:280px; display:flex; flex-direction:column; }
+  .chart-area { flex:1; min-height:0; overflow:hidden; }
+  .analytics-panel-title { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; margin-bottom:3px; }
+  .analytics-panel-sub { font-family:'DM Mono',monospace; font-size:9px; color:var(--text3); opacity:0.55; margin-bottom:12px; }
+
+  /* CHART TOOLTIP */
+  .chart-tooltip {
+    position:fixed; background:var(--bg3); border:1px solid var(--border2);
+    padding:8px 12px; font-family:'DM Mono',monospace; font-size:11px;
+    color:var(--text); pointer-events:none; z-index:500;
+    opacity:0; transition:opacity 0.15s; max-width:220px; line-height:1.5;
+    box-shadow:var(--shadow);
+  }
+
+  /* LEADERBOARD */
+  .lb-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .lb-row:last-child { border-bottom:none; }
+  .lb-rank { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text3); width:28px; flex-shrink:0; }
+  .lb-rank.top { color:var(--gold); }
+  .lb-info { flex:1; min-width:0; }
+  .lb-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lb-meta { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); margin-top:2px; }
+  .lb-value { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--gold); flex-shrink:0; }
+  .lb-bar-wrap { width:100%; height:3px; background:var(--bg4); margin-top:4px; border-radius:2px; overflow:hidden; }
+  .lb-bar { height:100%; background:var(--gold); border-radius:2px; opacity:0.7; transition:width 0.5s; }
+
+  /* KPI GAUGES */
+  .kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .kpi-card { background:var(--bg3); border:1px solid var(--border); padding:10px 8px; text-align:center; }
+  .kpi-value { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; line-height:1; margin-bottom:2px; }
+  .kpi-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--text3); text-transform:uppercase; }
+  .kpi-sub { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); margin-top:4px; }
+
+
+  /* PAGES */
+  .page { display:none; animation:fadeIn 0.2s ease; }
+  .page.active { display:block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .empty-state { text-align:center; padding:80px 20px; border:1px solid var(--border); background:var(--bg2); }
+  .empty-icon { font-size:40px; margin-bottom:16px; opacity:0.3; }
+  .empty-text { font-family:'DM Mono',monospace; font-size:12px; color:var(--text3); letter-spacing:2px; }
+
+  @media print {
+    body > *:not(#invoice-overlay) { display:none !important; }
+    #invoice-overlay { display:block !important; position:static !important; background:none !important; padding:0 !important; overflow:visible !important; }
+    .invoice-toolbar { display:none !important; }
+    .invoice-shell { box-shadow:none !important; width:100% !important; }
+    #invoice-doc { padding:40px !important; }
+    @page { margin:0; size:letter; }
+  }
+
+  /* Database pre-configured — no banner needed */
+
+  /* LOADING OVERLAY */
+  #loading-overlay { display:none; position:fixed; inset:0; background:rgba(255,255,255,0.85); z-index:500; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+  #loading-overlay.show { display:flex; }
+  .loading-spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin 0.8s linear infinite; }
+  .loading-text { font-family:'DM Mono',monospace; font-size:12px; color:var(--text3); letter-spacing:2px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* DB STATUS DOT */
+  .db-status { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; flex-shrink:0; }
+  .db-status.connected { background:#1e7e4a; }
+  .db-status.disconnected { background:#c0392b; }
+  .db-status.pending { background:#b8860b; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* PASSWORD MODALS */
+  .pw-modal { background:var(--bg2); border:1px solid var(--border2); padding:36px; width:420px; box-shadow:var(--shadow); position:relative; }
+  .pw-strength { height:4px; border-radius:2px; margin-top:6px; margin-bottom:4px; transition:all 0.3s; background:var(--bg4); }
+  .pw-strength-text { font-family:'DM Mono',monospace; font-size:10px; color:var(--text3); margin-bottom:12px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<!-- Database pre-configured -->
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">LOADING PIPELINE...</div>
+</div>
+
+<!-- DATABASE CONFIG MODAL -->
+<div class="modal-overlay" id="supabase-config-modal">
+  <div class="modal" style="width:580px">
+    <button class="modal-close" onclick="document.getElementById('supabase-config-modal').classList.remove('open')">✕</button>
+    <div class="modal-title" style="color:var(--blue)">Database Settings</div>
+    <div class="modal-sub">STORAGE &amp; SYNC OPTIONS</div>
+
+    <!-- Current mode -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--blue);padding:14px 16px;margin-bottom:20px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.8;color:var(--text2)">
+      <strong style="color:var(--blue)">Current mode: <span id="current-mode-label">Browser Storage</span></strong><br>
+      Data is saved in this browser. It persists when you close and reopen the tab, but is not shared with other team members or other devices.
+    </div>
+
+    <!-- Option A: localStorage (already active) -->
+    <div style="border:1px solid var(--border);padding:16px;margin-bottom:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Option A — Browser Storage (Active)</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Works right now, no setup needed. Data lives in this browser only — not shared across devices or team members.</div>
+      <button class="btn-secondary" id="reset-storage-btn" style="font-size:11px;padding:7px 16px">🗑 Clear All Local Data & Reset to Demo</button>
+    </div>
+
+    <!-- Option B: Supabase -->
+    <div style="border:1px solid var(--border);padding:16px;margin-bottom:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Option B — Live Database (Supabase)</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Shared across all 9 brokers in real time. Requires hosting the app on a public URL (e.g. Netlify). <strong style="color:var(--blue)">Cannot connect from a preview — must be deployed first.</strong></div>
+      <div style="background:var(--bg4);border:1px solid var(--border);padding:12px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);white-space:pre;overflow-x:auto;line-height:1.6">-- Run this in Supabase SQL Editor after creating your project:
+create table deals (
+  id uuid primary key default gen_random_uuid(),
+  broker text not null,
+  client text, address text, owner text, stage text,
+  sqft integer, annual_rent numeric, est_fee numeric,
+  outside_broker text, outside_broker_split numeric default 0,
+  agreement text default 'No', partners jsonb default '[]',
+  notes text, created date default current_date
+);
+alter table deals enable row level security;
+create policy "allow all" on deals for all using (true);</div>
+      <div class="form-group">
+        <label class="form-label">Supabase Project URL</label>
+        <input class="form-control" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <label class="form-label">Anon / Public Key</label>
+        <input class="form-control" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      </div>
+      <div id="sb-error" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:10px;min-height:16px"></div>
+      <button class="btn-primary" id="sb-connect-btn" style="font-size:12px">Connect Supabase</button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="document.getElementById('supabase-config-modal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="change-pw-modal">
+  <div class="pw-modal">
+    <button class="modal-close" onclick="document.getElementById('change-pw-modal').classList.remove('open')">✕</button>
+    <div class="modal-title" style="color:var(--blue);font-size:22px">Change Password</div>
+    <div class="modal-sub" id="change-pw-sub">UPDATE YOUR PASSWORD</div>
+    <div class="form-group">
+      <label class="form-label">Current Password</label>
+      <input class="form-control" id="cp-current" type="password" placeholder="Enter current password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input class="form-control" id="cp-new" type="password" placeholder="Enter new password" oninput="checkPwStrength(this.value)">
+      <div class="pw-strength" id="pw-strength-bar"></div>
+      <div class="pw-strength-text" id="pw-strength-text"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm New Password</label>
+      <input class="form-control" id="cp-confirm" type="password" placeholder="Re-enter new password">
+    </div>
+    <div id="cp-error" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:12px;min-height:16px"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="save-pw-btn">Save Password</button>
+      <button class="btn-secondary" onclick="document.getElementById('change-pw-modal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGER RESET PASSWORD MODAL -->
+<div class="modal-overlay" id="reset-pw-modal">
+  <div class="pw-modal">
+    <button class="modal-close" onclick="document.getElementById('reset-pw-modal').classList.remove('open')">✕</button>
+    <div class="modal-title" style="color:var(--blue);font-size:22px">Reset Password</div>
+    <div class="modal-sub">MANAGER — RESET BROKER PASSWORD</div>
+    <div class="form-group">
+      <label class="form-label">Broker</label>
+      <select class="form-control" id="reset-broker-select">
+        <option value="">— Select broker —</option>
+        <option value="b1">Cindy</option>
+        <option value="b2">Rick</option>
+        <option value="b3">Izzy</option>
+        <option value="b4">Dan</option>
+        <option value="b5">Libby</option>
+        <option value="b6">Christian</option>
+        <option value="b7">Josh</option>
+        <option value="b8">Lucas</option>
+        <option value="b9">Matthew (own password)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input class="form-control" id="reset-new-pw" type="password" placeholder="Enter new password for this broker">
+    </div>
+    <div id="reset-pw-error" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--red);margin-bottom:12px;min-height:16px"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="do-reset-pw-btn">Reset Password</button>
+      <button class="btn-secondary" onclick="document.getElementById('reset-pw-modal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-grid-bg"></div>
+  <div class="login-glow"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div style="font-family:'Syne',sans-serif;font-size:72px;font-weight:800;letter-spacing:2px;color:var(--blue);line-height:1">PS</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:4px;color:var(--blue);text-transform:uppercase;margin-top:2px">Processing</div>
+    </div>
+    <div class="login-tagline">Commercial Real Estate Intelligence</div>
+    <label class="login-label">Your Name</label>
+    <input class="login-input" id="login-name" placeholder="Enter your first name" autocomplete="off" style="margin-bottom:20px">
+    <label class="login-label">Password</label>
+    <input class="login-input" id="login-pass" type="password" placeholder="Enter password">
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" id="login-btn">Access Platform</button>
+    <div style="text-align:center;margin-top:16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">
+      Forgot your password? <a id="forgot-pw-link" style="color:var(--blue);cursor:pointer;text-decoration:underline">Click here</a>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MESSAGE -->
+<div class="modal-overlay" id="forgot-pw-modal">
+  <div class="pw-modal">
+    <button class="modal-close" onclick="document.getElementById('forgot-pw-modal').classList.remove('open')">✕</button>
+    <div class="modal-title" style="color:var(--blue);font-size:22px">Forgot Password?</div>
+    <div class="modal-sub">PASSWORD ASSISTANCE</div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--blue);padding:16px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.8;color:var(--text2)">
+      Contact <strong style="color:var(--blue)">Matthew</strong> to reset your password.<br><br>
+      Matthew can reset any broker's password from the <strong>Team Overview</strong> tab after logging in as manager.
+    </div>
+    <div style="margin-top:20px">
+      <button class="btn-secondary" onclick="document.getElementById('forgot-pw-modal').classList.remove('open')" style="width:100%">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">PS Processing</div>
+      <div class="topbar-nav">
+        <button class="nav-btn active" id="nav-pipeline">Pipeline</button>
+        <button class="nav-btn" id="btn-overview" style="display:none">Team Overview</button>
+        <button class="nav-btn" id="nav-analytics">Analytics</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="user-badge">
+        <div class="user-avatar" id="top-avatar"></div>
+        <span class="user-name" id="top-name"></span>
+        <span class="manager-tag" id="top-manager-tag" style="display:none">Manager</span>
+      </div>
+      <div style="display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)" id="db-status-indicator"><span class="db-status pending" id="db-dot"></span><span id="db-label">LOCAL</span></div>
+      <button class="logout-btn" id="change-pw-btn" style="border-color:var(--border)">🔑 Change Password</button>
+      <button class="logout-btn" id="logout-btn">Log Out</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PIPELINE -->
+    <div class="page active" id="page-pipeline">
+      <div class="stats-row" id="pipeline-stats"></div>
+      <div class="section-header">
+        <span class="section-title" id="pipeline-title">My Pipeline</span>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="add-btn" id="add-deal-btn">+ Add Deal</button>
+          <button class="add-btn" id="export-btn" onclick="exportToXLS()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px">&#8595; Export XLS</button>
+        </div>
+      </div>
+      <div class="filters">
+        <button class="filter-chip active" id="filter-all">All</button>
+        <button class="filter-chip" id="filter-prospect">Prospect</button>
+        <button class="filter-chip" id="filter-loi">LOI</button>
+        <button class="filter-chip" id="filter-lease">Lease</button>
+        <button class="filter-chip" id="filter-executed">Executed</button>
+        <button class="filter-chip" id="filter-dead">Dead</button>
+        <input class="search-input" id="search-box" placeholder="Search client, address, owner..." id="search-box">
+      </div>
+      <div class="table-wrap">
+        <table class="pipeline-table">
+          <thead>
+            <tr>
+              <th>Client Name</th>
+              <th>Address</th>
+              <th>Owner</th>
+              <th>Stage</th>
+              <th>Sq Ft</th>
+              <th>Annual Rent</th>
+              <th>Est. Total Fee</th>
+              <th>Our Fee</th>
+              <th>Outside Broker Fee</th>
+              <th>Agreement</th>
+              <th>Outside Broker</th>
+              <th>Internal Partners</th>
+              <th>Split %</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pipeline-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="page" id="page-overview">
+      <div class="section-header" style="margin-bottom:24px">
+        <span class="section-title">Team Pipeline · All Brokers</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span class="section-title">All Brokers</span>
+        <button class="add-btn" id="manager-reset-pw-btn" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:11px">🔑 Reset a Broker Password</button>
+      </div>
+      <div class="broker-grid" id="broker-grid"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="stats-row" id="analytics-stats"></div>
+
+      <!-- Row 1 -->
+      <div class="analytics-grid-3" style="margin-bottom:14px">
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title">Pipeline Funnel</div>
+          <div class="analytics-panel-sub">Deal count by stage</div>
+          <div id="chart-funnel" class="chart-area"></div>
+        </div>
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title">Fee Distribution</div>
+          <div class="analytics-panel-sub">Estimated fees by stage</div>
+          <div id="chart-donut" class="chart-area" style="display:flex;align-items:center;justify-content:center;gap:16px"></div>
+        </div>
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title">Square Footage by Stage</div>
+          <div class="analytics-panel-sub">Total SF per stage</div>
+          <div id="chart-sqft" class="chart-area"></div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="analytics-grid-3" style="margin-bottom:14px">
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title">Rent vs. Square Footage</div>
+          <div class="analytics-panel-sub">Bubble size = est. fee</div>
+          <div id="chart-scatter" class="chart-area"></div>
+        </div>
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title">Key Performance Indicators</div>
+          <div class="analytics-panel-sub">Rates, averages, and counts</div>
+          <div id="chart-kpi" class="chart-area"></div>
+        </div>
+        <div class="analytics-panel analytics-panel-fixed">
+          <div class="analytics-panel-title" id="leaderboard-title">Deal Leaderboard</div>
+          <div class="analytics-panel-sub">Ranked by estimated fee</div>
+          <div id="chart-leaderboard" class="chart-area" style="overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="deal-modal">
+  <div class="modal">
+    <button class="modal-close" id="deal-modal-close">✕</button>
+    <div class="modal-title" id="modal-title">New Deal</div>
+    <div class="modal-sub" id="modal-sub">ADD TRANSACTION TO PIPELINE</div>
+
+    <div class="form-section-label">Deal Parties</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Client Name</label>
+        <input class="form-control" id="f-client" placeholder="Tenant or client name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Owner</label>
+        <input class="form-control" id="f-owner" placeholder="Property owner / landlord">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Outside Broker</label>
+        <input class="form-control" id="f-outside-broker" placeholder="Name & firm (if any)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Outside Broker Split (%)</label>
+        <input class="form-control" id="f-outside-broker-split" type="number" min="0" max="100" placeholder="e.g. 50">
+      </div>
+    </div>
+
+    <div class="form-section-label">Property & Deal</div>
+    <div class="form-group">
+      <label class="form-label">Address</label>
+      <input class="form-control" id="f-address" placeholder="Full property address">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Deal Stage</label>
+        <select class="form-control" id="f-stage">
+          <option>Prospect</option><option>LOI</option><option>Lease</option><option>Executed</option><option>Dead</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Square Feet</label>
+        <input class="form-control" id="f-sqft" type="number" placeholder="0">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Annual Rent ($)</label>
+        <input class="form-control" id="f-annual-rent" type="number" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estimated Total Fee ($)</label>
+        <input class="form-control" id="f-est-fee" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-section-label">Agreement & Internal Splits</div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Agreement Signed</label>
+        <select class="form-control" id="f-agreement">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="form-label" style="margin-bottom:10px">Internal Partners & Splits</label>
+      <div id="splits-hint" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:10px">Lead broker retains remainder. Partner splits must not total 100% or more.</div>
+      <div id="splits-container"></div>
+      <button type="button" onclick="addSplitRow()" id="add-partner-btn" style="background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:7px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;width:100%;margin-top:6px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text3)'">+ Add Internal Partner</button>
+      <div id="split-total-bar" style="margin-top:10px;display:none">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">Partner allocation</span>
+          <span id="split-total-pct" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)">0% allocated</span>
+        </div>
+        <div style="height:4px;background:var(--bg4);border-radius:2px;overflow:hidden">
+          <div id="split-total-fill" style="height:100%;width:0%;background:var(--gold);border-radius:2px;transition:width 0.3s"></div>
+        </div>
+        <div id="split-total-warning" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--red);margin-top:6px;display:none">&#9888; Partner splits exceed 100%</div>
+      </div>
+    </div>
+
+    <div class="form-section-label">Notes</div>
+    <div class="form-group">
+      <label class="form-label">Deal Notes</label>
+      <textarea class="form-control" id="f-notes" placeholder="Key details, next steps, conditions..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="save-deal-btn">Save Deal</button>
+      <button class="btn-secondary" id="cancel-deal-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal" style="width:680px">
+    <button class="modal-close" id="detail-modal-close">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<script>
+const USERS = {
+  manager:{ name:'Matthew',    role:'Manager', initials:'MA', title:'Manager / Broker' },
+  b1: { name:'Cindy',          role:'Broker',  initials:'CI', title:'Broker' },
+  b2: { name:'Rick',           role:'Broker',  initials:'RI', title:'Broker' },
+  b3: { name:'Izzy',           role:'Broker',  initials:'IZ', title:'Broker' },
+  b4: { name:'Dan',            role:'Broker',  initials:'DA', title:'Broker' },
+  b5: { name:'Libby',          role:'Broker',  initials:'LI', title:'Broker' },
+  b6: { name:'Christian',      role:'Broker',  initials:'CH', title:'Broker' },
+  b7: { name:'Josh',           role:'Broker',  initials:'JO', title:'Broker' },
+  b8: { name:'Lucas',          role:'Broker',  initials:'LU', title:'Broker' },
+  b9: { name:'Matthew',        role:'Broker',  initials:'MA', title:'Manager / Broker' }
+};
+
+
+// ── Per-user passwords (Matthew can change any via manager view) ──
+// Default: each broker's password is their lowercase first name
+let PASSWORDS = {
+  manager: 'matthew',
+  b1: 'cindy',
+  b2: 'rick',
+  b3: 'izzy',
+  b4: 'dan',
+  b5: 'libby',
+  b6: 'christian',
+  b7: 'josh',
+  b8: 'lucas',
+  b9: 'matthew'
+};
+
+function loadPasswords() {
+  try {
+    const saved = localStorage.getItem('psp_passwords');
+    if (saved) PASSWORDS = { ...PASSWORDS, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+
+function savePasswords() {
+  try { localStorage.setItem('psp_passwords', JSON.stringify(PASSWORDS)); } catch(e) {}
+}
+
+const STAGES = ['Prospect','LOI','Lease','Executed','Dead'];
+const STAGE_COLORS = { Prospect:'#5b8dee', LOI:'#e8884a', Lease:'#9b6ee0', Executed:'#3dba7e', Dead:'#e05c5c' };
+const STAGE_BADGE  = { Prospect:'badge-prospect', LOI:'badge-loi', Lease:'badge-lease', Executed:'badge-executed', Dead:'badge-dead' };
+
+const DEMO_DEALS = [
+  { id:1,  broker:'b1',  client:'Blackstone Group',     address:'1 Market St, San Francisco, CA',          owner:'Hudson Pacific Properties',  stage:'Executed', sqft:85000,  annualRent:5100000,  estFee:255000,  agreement:'Yes', outsideBroker:'CBRE – Mike Tran', outsideBrokerSplit:50,     partners:[{name:'Christian',split:40}],                            notes:'Phase 2 complete. Commission processing.',    created:'2026-01-10' },
+  { id:2,  broker:'b1',  client:'TJX Companies',        address:'340 Post St, San Francisco, CA',           owner:'Westfield Corp',             stage:'LOI',      sqft:12000,  annualRent:960000,   estFee:48000,   agreement:'Yes', outsideBroker:'', outsideBrokerSplit:0,                     partners:[],                                                        notes:'LOI signed. Negotiating TI allowance.',         created:'2026-02-01' },
+  { id:3,  broker:'b2',  client:'Meta Platforms',       address:'2100 Geng Rd, Palo Alto, CA',              owner:'Menlo Gateway LLC',          stage:'Lease',    sqft:420000, annualRent:29400000, estFee:882000,  agreement:'Yes', outsideBroker:'JLL – Sarah Kim', outsideBrokerSplit:50,      partners:[{name:'Lucas',split:30},{name:'Izzy',split:20}],  notes:'Lease draft in final review with counsel.',    created:'2026-01-20' },
+  { id:4,  broker:'b2',  client:'Amazon Logistics',     address:'7600 Edgewater Dr, Oakland, CA',           owner:'Prologis REIT',              stage:'Prospect', sqft:340000, annualRent:8160000,  estFee:204000,  agreement:'No',  outsideBroker:'', outsideBrokerSplit:0,                     partners:[],                                                        notes:'Initial tour complete. Strong interest.',        created:'2026-02-15' },
+  { id:5,  broker:'b3',  client:'JP Morgan Asset Mgmt', address:'1670 Broadway, Denver, CO',                owner:'Invesco Real Estate',        stage:'Executed', sqft:210000, annualRent:11550000, estFee:346500,  agreement:'Yes', outsideBroker:'Newmark – Dave Osei', outsideBrokerSplit:50,  partners:[],                                                        notes:'Executed. Commission $346.5K received.',          created:'2025-11-01' },
+  { id:6,  broker:'b3',  client:'Whole Foods Market',   address:'3000 E 1st Ave, Denver, CO',               owner:'Regency Centers',            stage:'Prospect', sqft:65000,  annualRent:3250000,  estFee:97500,   agreement:'No',  outsideBroker:'', outsideBrokerSplit:0,                     partners:[{name:'Libby',split:30}],                            notes:'Touring this week. Budget confirmed.',          created:'2026-03-10' },
+  { id:7,  broker:'b4',  client:'Greystar Real Estate', address:'3400 Peachtree Rd, Atlanta, GA',            owner:'Cousins Properties',         stage:'LOI',      sqft:310000, annualRent:18600000, estFee:558000,  agreement:'Yes', outsideBroker:'Cushman – Lisa Park', outsideBrokerSplit:50, partners:[{name:'Cindy',split:25},{name:'Christian',split:20}], notes:'LOI under negotiation. Legal review ongoing.',   created:'2026-01-28' },
+  { id:8,  broker:'b4',  client:'Marriott Intl',        address:'188 14th St NE, Atlanta, GA',              owner:'Noble Investment Group',     stage:'Dead',     sqft:95000,  annualRent:6650000,  estFee:199500,  agreement:'No',  outsideBroker:'', outsideBrokerSplit:0,                     partners:[],                                                        notes:'Deal fell through — financing issue.',           created:'2025-12-15' },
+  { id:9,  broker:'b5',  client:'Prologis',             address:'1400 E 4th St, Austin, TX',                owner:'Stonelake Capital',          stage:'Prospect', sqft:180000, annualRent:5400000,  estFee:162000,  agreement:'No',  outsideBroker:'', outsideBrokerSplit:0,                     partners:[],                                                        notes:'Initial underwriting phase.',                    created:'2026-03-01' },
+  { id:10, broker:'b6',  client:'Lululemon Athletica',  address:'5801 Wilshire Blvd, Los Angeles, CA',      owner:'Unibail-Rodamco',            stage:'Lease',    sqft:8500,   annualRent:680000,   estFee:34000,   agreement:'Yes', outsideBroker:'', outsideBrokerSplit:0,                     partners:[],                                                        notes:'Lease finalized. Executing next month.',          created:'2026-01-15' },
+  { id:11, broker:'b6',  client:'WestRock Capital',     address:'1880 Century Park E, Los Angeles, CA',     owner:'Equity Commonwealth',        stage:'LOI',      sqft:175000, annualRent:10500000, estFee:315000,  agreement:'Yes', outsideBroker:'CBRE – Tom Hall', outsideBrokerSplit:50,      partners:[{name:'Izzy',split:40}],                             notes:'LOI submitted. Title review in progress.',      created:'2026-02-20' },
+  { id:12, broker:'b7',  client:'Equity Residential',   address:'1201 S Rural Rd, Tempe, AZ',               owner:'AvalonBay Communities',      stage:'LOI',      sqft:240000, annualRent:9600000,  estFee:288000,  agreement:'Yes', outsideBroker:'Colliers – Anne Wu', outsideBrokerSplit:50,   partners:[],                                                        notes:'Rent roll review underway.',                     created:'2026-02-10' },
+  { id:13, broker:'b8',  client:'Related Companies',    address:'350 N Orleans St, Chicago, IL',             owner:'Sterling Bay',               stage:'Executed', sqft:190000, annualRent:11400000, estFee:342000,  agreement:'Yes', outsideBroker:'', outsideBrokerSplit:0,                     partners:[{name:'Rick',split:35}],                           notes:'Executed. Commission $342K. Split with JB.',     created:'2025-10-01' },
+  { id:14, broker:'b8',  client:'Blackstone Logistics', address:'9550 W Irving Park Rd, Schiller Park, IL', owner:'EQT Exeter',                 stage:'Lease',    sqft:520000, annualRent:18200000, estFee:546000,  agreement:'Yes', outsideBroker:'JLL – Kevin Park', outsideBrokerSplit:50,     partners:[],                                                        notes:'Lease out for signature. Clear to execute.',      created:'2026-01-05' },
+  { id:15, broker:'b9',  client:'Vornado Realty',       address:'1221 Ave of Americas, New York, NY',       owner:'RXR Realty',                 stage:'Prospect', sqft:780000, annualRent:70200000, estFee:1755000, agreement:'No',  outsideBroker:'', outsideBrokerSplit:0,                     partners:[{name:'Cindy',split:25},{name:'Libby',split:25}], notes:'Very early stage. RFP issued.',                  created:'2026-03-20' },
+  { id:16, broker:'b9', client:'GLP Capital Partners', address:'100 Drydock Ave, Boston, MA',               owner:'Beacon Capital Partners',    stage:'Lease',    sqft:145000, annualRent:5800000,  estFee:174000,  agreement:'Yes', outsideBroker:'Newmark – Chris Lee', outsideBrokerSplit:50,  partners:[],                                                        notes:'Lease in final review.',                         created:'2026-02-25' },
+];
+let deals = [];
+let currentUser = null, currentFilter = 'all', editingDealId = null;
+
+// ── Storage layer — Supabase hardcoded ──
+let SB_URL = 'https://spbybgskozcjpmwhfgdq.supabase.co';
+let SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwYnliZ3Nrb3pjanBtd2hmZ2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTEwMTksImV4cCI6MjA5MDU2NzAxOX0.A_CSoJCxPzUpC4JdvXYbhiKzKA6aokm4a1DEuneYntU';
+let DB_MODE = true; // connected to Supabase
+
+const LS_KEY = 'psp_deals'; // localStorage key for deals
+
+// ── localStorage helpers ──
+function lsSave(dealsArr) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(dealsArr)); } catch(e) {}
+}
+function lsLoad() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+// ── Supabase REST helpers ──
+function sbHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Prefer': 'return=representation'
+  };
+}
+
+async function sbFetch(path, method, body) {
+  const opts = { method: method || 'GET', headers: sbHeaders() };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(SB_URL + '/rest/v1/' + path, opts);
+  const text = await res.text();
+  const json = text ? JSON.parse(text) : null;
+  if (!res.ok) throw new Error((json && json.message) || res.statusText);
+  return json;
+}
+
+function initSupabase(url, key) {
+  SB_URL = url.replace(/\/+$/, '');
+  SB_KEY = key;
+}
+
+function setDbStatus(state) {
+  const dot = document.getElementById('db-dot');
+  const lbl = document.getElementById('db-label');
+  if (!dot) return;
+  dot.className = 'db-status ' + (state === 'local' ? 'pending' : state);
+  lbl.textContent = state === 'connected' ? 'LIVE DB' : state === 'pending' ? 'CONNECTING' : 'SAVED LOCALLY';
+}
+
+function showLoading(show) {
+  document.getElementById('loading-overlay').classList.toggle('show', show);
+}
+
+// AUTH
+function doLogin() {
+  const nameInput = (document.getElementById('login-name').value || '').trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  if (!nameInput) { err.textContent = 'Please enter your name.'; return; }
+  if (!pass) { err.textContent = 'Please enter your password.'; return; }
+  // Find user by name
+  const matched = Object.entries(USERS).find(([k,u]) =>
+    u.name.toLowerCase() === nameInput && k !== 'manager'
+  );
+  if (!matched) { err.textContent = 'Name not recognised. Please try again.'; return; }
+  const [uid] = matched;
+  // Check password
+  const correctPass = PASSWORDS[uid] || uid;
+  if (pass !== correctPass) { err.textContent = 'Incorrect password. Contact Matthew to reset.'; return; }
+  // Matthew gets manager-level access
+  currentUser = USERS[uid].name.toLowerCase() === 'matthew' ? 'manager' : uid;
+  err.textContent = ''; initApp();
+}
+// login-pass keydown is wired in DOMContentLoaded below
+
+function doLogout() {
+  currentUser = null; currentFilter = 'all';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-name').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ─── DB helpers ───
+function toRow(d) {
+  // Map JS camelCase deal → snake_case Supabase row
+  return {
+    broker: d.broker,
+    client: d.client||'',
+    address: d.address||'',
+    owner: d.owner||'',
+    stage: d.stage||'Prospect',
+    sqft: d.sqft||0,
+    annual_rent: d.annualRent||0,
+    est_fee: d.estFee||0,
+    outside_broker: d.outsideBroker||'',
+    outside_broker_split: d.outsideBrokerSplit||0,
+    agreement: d.agreement||'No',
+    partners: JSON.stringify(d.partners||[]),
+    notes: d.notes||'',
+    created: d.created||new Date().toISOString().split('T')[0]
+  };
+}
+
+function fromRow(r) {
+  // Map snake_case Supabase row → JS camelCase deal
+  return {
+    id: r.id,
+    broker: r.broker,
+    client: r.client,
+    address: r.address,
+    owner: r.owner,
+    stage: r.stage,
+    sqft: r.sqft,
+    annualRent: r.annual_rent,
+    estFee: r.est_fee,
+    outsideBroker: r.outside_broker,
+    outsideBrokerSplit: r.outside_broker_split,
+    agreement: r.agreement,
+    partners: typeof r.partners === 'string' ? JSON.parse(r.partners) : (r.partners||[]),
+    notes: r.notes,
+    created: r.created
+  };
+}
+
+async function loadDeals() {
+  showLoading(true);
+  if (DB_MODE) {
+    // Supabase live mode
+    try {
+      const rows = await sbFetch('deals?order=created.desc');
+      deals = rows.map(fromRow);
+      setDbStatus('connected');
+    } catch(e) {
+      console.error('Supabase load error:', e);
+      setDbStatus('disconnected');
+      DB_MODE = false;
+      // Fall back to localStorage
+      const saved = lsLoad();
+      deals = saved || DEMO_DEALS.map(d => ({...d}));
+    }
+  } else {
+    // localStorage mode — load saved or demo data
+    const saved = lsLoad();
+    deals = saved || DEMO_DEALS.map(d => ({...d}));
+    setDbStatus('local');
+  }
+  showLoading(false);
+  renderAll();
+}
+
+// INIT
+async function initApp() {
+  const u = USERS[currentUser];
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('top-name').textContent = u.name;
+  document.getElementById('top-avatar').textContent = u.initials;
+  document.getElementById('top-manager-tag').style.display = currentUser==='manager' ? 'inline-block' : 'none';
+  document.getElementById('btn-overview').style.display = currentUser==='manager' ? 'inline-block' : 'none';
+  document.getElementById('add-deal-btn').style.display = currentUser==='manager' ? 'none' : 'inline-block';
+  document.getElementById('pipeline-title').textContent = currentUser==='manager' ? 'All Deals — Full Pipeline' : 'My Pipeline';
+  await loadDeals();
+}
+
+function showPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(page==='pipeline') renderTable();
+  if(page==='overview') renderOverview();
+  if(page==='analytics') renderAnalytics();
+}
+
+function renderAll() { renderStats(); renderTable(); renderOverview(); renderAnalytics(); }
+
+// HELPERS
+function getMyDeals() { return currentUser==='manager' ? deals : deals.filter(d=>d.broker===currentUser); }
+function fmtM(v) {
+  if(!v) return '—';
+  if(v>=1e9) return '$'+(v/1e9).toFixed(1)+'B';
+  if(v>=1e6) return '$'+(v/1e6).toFixed(1)+'M';
+  if(v>=1e3) return '$'+(v/1e3).toFixed(0)+'K';
+  return '$'+v.toLocaleString();
+}
+function fmtFull(v) { return v ? '$'+v.toLocaleString() : '—'; }
+function fmtSqft(v) { return v ? v.toLocaleString()+' SF' : '—'; }
+
+// Fee split helpers
+function calcOBFee(d) {
+  const pct = d.outsideBrokerSplit || 0;
+  return Math.round((d.estFee || 0) * pct / 100);
+}
+function calcOurFee(d) {
+  return (d.estFee || 0) - calcOBFee(d);
+}
+
+// STATS
+function renderStats() {
+  const mine = getMyDeals();
+  const active = mine.filter(d=>!['Executed','Dead'].includes(d.stage));
+  const executed = mine.filter(d=>d.stage==='Executed');
+  const totalFees = mine.reduce((s,d)=>s+(d.estFee||0),0);
+  const execFees  = executed.reduce((s,d)=>s+(d.estFee||0),0);
+  document.getElementById('pipeline-stats').innerHTML = `
+    <div class="stat-card gold">
+      <div class="stat-label">Active Annual Rent</div>
+      <div class="stat-value">${fmtM(active.reduce((s,d)=>s+(d.annualRent||0),0))}</div>
+      <div class="stat-sub">${active.length} active deals</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Executed Fees (YTD)</div>
+      <div class="stat-value">${fmtM(execFees)}</div>
+      <div class="stat-sub">${executed.length} executed deals</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Total Est. Fees</div>
+      <div class="stat-value">${fmtM(totalFees)}</div>
+      <div class="stat-sub">full pipeline</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Total Sq Footage</div>
+      <div class="stat-value">${(mine.reduce((s,d)=>s+(d.sqft||0),0)/1e6).toFixed(1)}M</div>
+      <div class="stat-sub">${mine.length} total deals</div>
+    </div>`;
+}
+
+// TABLE
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function renderTable(customData) {
+  let data = customData || getMyDeals();
+  if(!customData && currentFilter!=='all') data = data.filter(d=>d.stage===currentFilter);
+  if(!customData) {
+    const q = document.getElementById('search-box').value.toLowerCase();
+    if(q) data = data.filter(d =>
+      (d.client||'').toLowerCase().includes(q) ||
+      (d.address||'').toLowerCase().includes(q) ||
+      (d.owner||'').toLowerCase().includes(q) ||
+      (d.outsideBroker||'').toLowerCase().includes(q)
+    );
+  }
+  const tbody = document.getElementById('pipeline-body');
+  if(!data.length) {
+    tbody.innerHTML = `<tr><td colspan="14"><div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">No deals found</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(d => {
+    const brokerLabel = currentUser==='manager'
+      ? `<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:2px">${USERS[d.broker].name}</div>` : '';
+    return `<tr onclick="openDetail(${d.id})">
+      <td><div class="client-name">${d.client||'—'}</div>${brokerLabel}</td>
+      <td><div class="mono-dim" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.address||''}">${d.address||'—'}</div></td>
+      <td><div class="mono-sm">${d.owner||'—'}</div></td>
+      <td><span class="badge ${STAGE_BADGE[d.stage]}">${d.stage}</span></td>
+      <td><div class="mono-sm">${fmtSqft(d.sqft)}</div></td>
+      <td><div class="rent-val">${fmtM(d.annualRent)}</div></td>
+      <td><div class="fee-val">${fmtM(d.estFee)}</div></td>
+      <td><div class="fee-val" style="color:var(--green)">${fmtM(calcOurFee(d))}</div></td>
+      <td><div class="mono-sm" style="color:var(--orange)">${d.outsideBroker&&d.outsideBrokerSplit?fmtM(calcOBFee(d)):'—'}</div></td>
+      <td><span class="${d.agreement==='Yes'?'agree-yes':'agree-no'}">${d.agreement||'No'}</span></td>
+      <td><div class="mono-dim">${d.outsideBroker||'—'}</div></td>
+      <td><div class="mono-sm">${(d.partners&&d.partners.length)?d.partners.map(p=>p.name).join(', '):'—'}</div></td>
+      <td><div class="mono-sm">${(d.partners&&d.partners.length)?d.partners.map(p=>p.split+'%').join(' / '):'—'}</div></td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap">
+        ${currentUser!=='manager'?`<button class="action-btn" onclick="openEdit(${d.id})">Edit</button>`:''}
+        <button class="action-btn" onclick="openDetail(${d.id})">View</button>
+        ${currentUser!=='manager'?`<button class="action-btn danger" onclick="deleteDeal(${d.id})">Del</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// OVERVIEW
+function renderOverview() {
+  const brokerIds = Object.keys(USERS).filter(k=>k!=='manager');
+  document.getElementById('broker-grid').innerHTML = brokerIds.map(bid => {
+    const u = USERS[bid];
+    const bd = deals.filter(d=>d.broker===bid);
+    const executed = bd.filter(d=>d.stage==='Executed');
+    const totalFees = bd.reduce((s,d)=>s+(d.estFee||0),0);
+    const total = bd.length||1;
+    const segs = STAGES.map(s => {
+      const cnt = bd.filter(d=>d.stage===s).length;
+      return cnt>0?`<div style="flex:${(cnt/total*100).toFixed(1)};background:${STAGE_COLORS[s]};opacity:0.8;border-radius:2px"></div>`:''
+    }).join('');
+    const latest = [...bd].sort((a,b)=>b.id-a.id)[0];
+    return `<div class="broker-card" onclick="viewBrokerPipeline('${bid}')">
+      <div class="broker-card-header">
+        <div class="broker-avatar">${u.initials}</div>
+        <div><div class="broker-info-name">${u.name}</div><div class="broker-info-title">${u.title}</div></div>
+      </div>
+      <div class="broker-stats">
+        <div class="broker-stat"><span class="broker-stat-val">${bd.length}</span><span class="broker-stat-lbl">Deals</span></div>
+        <div class="broker-stat"><span class="broker-stat-val">${executed.length}</span><span class="broker-stat-lbl">Executed</span></div>
+        <div class="broker-stat"><span class="broker-stat-val">${fmtM(totalFees)}</span><span class="broker-stat-lbl">Est. Fees</span></div>
+      </div>
+      <div class="broker-pipeline-mini">${segs||'<div style="flex:100;background:var(--border);border-radius:2px"></div>'}</div>
+      <div class="broker-latest">${latest?`Latest: ${latest.client} · <span class="badge ${STAGE_BADGE[latest.stage]}" style="padding:1px 6px;font-size:8px">${latest.stage}</span>`:'No deals yet'}</div>
+    </div>`;
+  }).join('');
+}
+
+function viewBrokerPipeline(bid) {
+  showPage('pipeline', document.querySelectorAll('.nav-btn')[0]);
+  document.getElementById('pipeline-title').textContent = `${USERS[bid].name}'s Pipeline`;
+  document.getElementById('search-box').value = '';
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-chip').forEach((c,i)=>c.classList.toggle('active',i===0));
+  renderTable(deals.filter(d=>d.broker===bid));
+  renderStats();
+}
+
+// ═══════════════════════════════════════════════════════
+// ANALYTICS & CHARTS
+// ═══════════════════════════════════════════════════════
+
+// Shared tooltip
+let _tip = null;
+function getTooltip() {
+  if (!_tip) { _tip = document.createElement('div'); _tip.className = 'chart-tooltip'; document.body.appendChild(_tip); }
+  return _tip;
+}
+function showTip(e, html) {
+  const t = getTooltip(); t.innerHTML = html; t.style.opacity = '1';
+  t.style.left = (e.clientX + 14) + 'px'; t.style.top = (e.clientY - 10) + 'px';
+}
+function hideTip() { getTooltip().style.opacity = '0'; }
+
+function renderAnalytics() {
+  const mine = getMyDeals();
+  const totalFees = mine.reduce((s,d)=>s+(d.estFee||0),0);
+  const totalRent = mine.reduce((s,d)=>s+(d.annualRent||0),0);
+  const execFees  = mine.filter(d=>d.stage==='Executed').reduce((s,d)=>s+(d.estFee||0),0);
+  const winRate   = ((mine.filter(d=>d.stage==='Executed').length / Math.max(mine.filter(d=>['Executed','Dead'].includes(d.stage)).length,1))*100).toFixed(0);
+
+  // ── KPI Stats Row ──
+  document.getElementById('analytics-stats').innerHTML = `
+    <div class="stat-card gold"><div class="stat-label">Total Annual Rent</div><div class="stat-value">${fmtM(totalRent)}</div><div class="stat-sub">${mine.length} deals total</div></div>
+    <div class="stat-card green"><div class="stat-label">Win Rate</div><div class="stat-value">${winRate}%</div><div class="stat-sub">executed vs. dead</div></div>
+    <div class="stat-card blue"><div class="stat-label">Total Est. Fees</div><div class="stat-value">${fmtM(totalFees)}</div><div class="stat-sub">full pipeline</div></div>
+    <div class="stat-card orange"><div class="stat-label">Executed Fees</div><div class="stat-value">${fmtM(execFees)}</div><div class="stat-sub">confirmed revenue</div></div>`;
+
+  renderFunnel(mine);
+  renderDonut(mine, totalFees);
+  renderScatter(mine);
+  renderSqftBar(mine);
+  renderKPI(mine, winRate);
+  renderLeaderboard(mine);
+}
+
+// ── 1. PIPELINE FUNNEL ──
+function renderFunnel(mine) {
+  const W = 320, H = 175, pad = 12;
+  const stageData = STAGES.filter(s => s !== 'Dead').map(s => {
+    const sd = mine.filter(d => d.stage === s);
+    return { stage: s, count: sd.length, rent: sd.reduce((a,b)=>a+(b.annualRent||0),0), color: STAGE_COLORS[s] };
+  });
+  const maxCount = Math.max(...stageData.map(s=>s.count), 1);
+  const slotH = (H - pad*2) / stageData.length;
+  const maxW = W - 70;
+
+  let bars = stageData.map((s, i) => {
+    const bw = Math.max((s.count / maxCount) * maxW, 4);
+    const x = (W - bw) / 2;
+    const y = pad + i * slotH + 4;
+    const bh = slotH - 8;
+    const labelX = x + bw + 8;
+    return `
+      <rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="${s.color}" opacity="0.75" rx="2"
+        data-tip="${s.stage}: ${s.count} deal${s.count!==1?'s':''} · ${fmtM(s.rent)}"
+        style="cursor:pointer;transition:opacity 0.2s"
+        onmouseenter="showTip(event,this.dataset.tip)" onmouseleave="hideTip()"
+        onmouseover="this.setAttribute('opacity','1')" onmouseout="this.setAttribute('opacity','0.75')"/>
+      <text x="${x - 6}" y="${y + bh/2 + 4}" text-anchor="end" font-family="DM Mono,monospace" font-size="10" fill="#82aac0">${s.stage}</text>
+      <text x="${labelX}" y="${y + bh/2 + 4}" font-family="DM Mono,monospace" font-size="10" fill="#4a7a9b">${s.count}</text>`;
+  }).join('');
+
+  // Connector lines between bars for funnel effect
+  let connectors = '';
+  for (let i = 0; i < stageData.length - 1; i++) {
+    const bw1 = Math.max((stageData[i].count / maxCount) * maxW, 4);
+    const bw2 = Math.max((stageData[i+1].count / maxCount) * maxW, 4);
+    const x1L = (W - bw1)/2, x1R = x1L + bw1;
+    const x2L = (W - bw2)/2, x2R = x2L + bw2;
+    const y1 = pad + i * slotH + slotH - 4;
+    const y2 = pad + (i+1) * slotH + 4;
+    connectors += `<polygon points="${x1L},${y1} ${x1R},${y1} ${x2R},${y2} ${x2L},${y2}" fill="${stageData[i].color}" opacity="0.15"/>`;
+  }
+
+  document.getElementById('chart-funnel').innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" width="100%" style="overflow:visible">${connectors}${bars}</svg>`;
+}
+
+// ── 2. FEE DONUT CHART ──
+function renderDonut(mine, totalFees) {
+  const el = document.getElementById('chart-donut');
+  if (!totalFees) { el.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:11px;color:var(--text3)">No fee data</span>'; return; }
+  const stageData = STAGES.map(s => {
+    const v = mine.filter(d=>d.stage===s).reduce((a,b)=>a+(b.estFee||0),0);
+    return { stage:s, value:v, color:STAGE_COLORS[s] };
+  }).filter(s=>s.value>0);
+
+  const R = 52, r = 31, cx = 66, cy = 66;
+  let startAngle = -Math.PI/2;
+  let slices = '';
+  stageData.forEach(s => {
+    const angle = (s.value / totalFees) * 2 * Math.PI;
+    const x1 = cx + R * Math.cos(startAngle);
+    const y1 = cy + R * Math.sin(startAngle);
+    const x2 = cx + R * Math.cos(startAngle + angle);
+    const y2 = cy + R * Math.sin(startAngle + angle);
+    const ix1 = cx + r * Math.cos(startAngle);
+    const iy1 = cy + r * Math.sin(startAngle);
+    const ix2 = cx + r * Math.cos(startAngle + angle);
+    const iy2 = cy + r * Math.sin(startAngle + angle);
+    const large = angle > Math.PI ? 1 : 0;
+    slices += `<path d="M${ix1},${iy1} L${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} L${ix2},${iy2} A${r},${r} 0 ${large} 0 ${ix1},${iy1}Z"
+      fill="${s.color}" opacity="0.8" style="cursor:pointer;transition:opacity 0.2s"
+      data-tip="${s.stage}: ${fmtM(s.value)} (${(s.value/totalFees*100).toFixed(1)}%)"
+      onmouseenter="showTip(event,this.dataset.tip)" onmouseleave="hideTip()"
+      onmouseover="this.setAttribute('opacity','1')" onmouseout="this.setAttribute('opacity','0.8')"/>`;
+    startAngle += angle;
+  });
+
+  // Center text
+  const centerSvg = `<text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" fill="#c9a84c" font-weight="300">${fmtM(totalFees)}</text>
+    <text x="${cx}" y="${cy+9}" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="#82aac0" letter-spacing="1">TOTAL FEES</text>`;
+
+  const svg = `<svg viewBox="0 0 132 132" width="132" height="132">${slices}${centerSvg}</svg>`;
+
+  // Legend
+  const legend = stageData.map(s =>
+    `<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;cursor:default"
+       onmouseenter="showTip(event,'${s.stage}: ${fmtM(s.value)}')" onmouseleave="hideTip()">
+      <div style="width:10px;height:10px;background:${s.color};opacity:0.8;flex-shrink:0;border-radius:2px"></div>
+      <div>
+        <div style="font-family:DM Mono,monospace;font-size:10px;color:var(--text2)">${s.stage}</div>
+        <div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text3)">${(s.value/totalFees*100).toFixed(1)}%</div>
+      </div>
+    </div>`
+  ).join('');
+
+  el.innerHTML = svg + `<div style="flex:1">${legend}</div>`;
+}
+
+// ── 3. RENT VS SQFT SCATTER ──
+function renderScatter(mine) {
+  const el = document.getElementById('chart-scatter');
+  const active = mine.filter(d => d.sqft > 0 && d.annualRent > 0);
+  if (!active.length) { el.innerHTML = '<span style="font-family:DM Mono,monospace;font-size:11px;color:var(--text3)">No data with SF and rent</span>'; return; }
+
+  const W = 320, H = 168, padL = 48, padR = 12, padT = 12, padB = 28;
+  const maxSqft = Math.max(...active.map(d=>d.sqft));
+  const maxRent = Math.max(...active.map(d=>d.annualRent));
+  const maxFee  = Math.max(...active.map(d=>d.estFee||1));
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  const px = v => padL + (v / maxSqft) * plotW;
+  const py = v => padT + plotH - (v / maxRent) * plotH;
+  const pr = v => 4 + ((v || 0) / maxFee) * 10;
+
+  // Grid lines
+  let grid = '';
+  [0,.25,.5,.75,1].forEach(t => {
+    const y = padT + plotH * (1-t);
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#c8d8e8" stroke-width="1"/>
+      <text x="${padL-6}" y="${y+4}" text-anchor="end" font-family="DM Mono,monospace" font-size="9" fill="#82aac0">${fmtM(maxRent*t)}</text>`;
+  });
+  [0,.25,.5,.75,1].forEach(t => {
+    const x = padL + plotW * t;
+    grid += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${padT+plotH}" stroke="#c8d8e8" stroke-width="1"/>
+      <text x="${x}" y="${padT+plotH+14}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#82aac0">${(maxSqft*t/1000).toFixed(0)}K</text>`;
+  });
+
+  // Axis labels
+  grid += `<text x="${padL + plotW/2}" y="${H-2}" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#82aac0" letter-spacing="1">SQUARE FEET</text>`;
+  grid += `<text x="10" y="${padT + plotH/2}" text-anchor="middle" font-family="DM Mono,monospace" font-size="8" fill="#82aac0" letter-spacing="1" transform="rotate(-90,10,${padT+plotH/2})">ANNUAL RENT</text>`;
+
+  // Dots
+  const dots = active.map(d => {
+    const x = px(d.sqft), y = py(d.annualRent), rr = pr(d.estFee);
+    const broker = USERS[d.broker]?.name || '';
+    return `<circle cx="${x}" cy="${y}" r="${rr}" fill="${STAGE_COLORS[d.stage]}" opacity="0.7" style="cursor:pointer;transition:opacity 0.2s"
+      data-tip="${d.client}&#10;Rent: ${fmtM(d.annualRent)}&#10;SF: ${(d.sqft||0).toLocaleString()}&#10;Fee: ${fmtM(d.estFee)}&#10;${broker}"
+      onmouseenter="showTip(event,this.dataset.tip.replace(/&#10;/g,'<br>'))" onmouseleave="hideTip()"
+      onmouseover="this.setAttribute('opacity','1')" onmouseout="this.setAttribute('opacity','0.7')"/>`;
+  }).join('');
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">${grid}${dots}</svg>`;
+}
+
+// ── 4. SQFT BAR BY STAGE ──
+function renderSqftBar(mine) {
+  const el = document.getElementById('chart-sqft');
+  const W = 320, H = 175, padL = 65, padR = 12, padT = 10, padB = 10;
+  const stageData = STAGES.map(s => ({
+    stage: s,
+    sqft: mine.filter(d=>d.stage===s).reduce((a,b)=>a+(b.sqft||0),0),
+    color: STAGE_COLORS[s]
+  }));
+  const maxSqft = Math.max(...stageData.map(s=>s.sqft), 1);
+  const barH = (H - padT - padB) / STAGES.length;
+  const plotW = W - padL - padR;
+
+  let bars = stageData.map((s, i) => {
+    const bw = Math.max((s.sqft / maxSqft) * plotW, 2);
+    const y = padT + i * barH + 4;
+    const bh = barH - 8;
+    return `
+      <rect x="${padL}" y="${y}" width="${bw}" height="${bh}" fill="${s.color}" opacity="0.75" rx="2"
+        data-tip="${s.stage}: ${s.sqft.toLocaleString()} SF"
+        style="cursor:pointer;transition:opacity 0.2s"
+        onmouseenter="showTip(event,this.dataset.tip)" onmouseleave="hideTip()"
+        onmouseover="this.setAttribute('opacity','1')" onmouseout="this.setAttribute('opacity','0.75')"/>
+      <text x="${padL - 8}" y="${y + bh/2 + 4}" text-anchor="end" font-family="DM Mono,monospace" font-size="10" fill="#82aac0">${s.stage}</text>
+      ${s.sqft > 0 ? `<text x="${padL + bw + 6}" y="${y + bh/2 + 4}" font-family="DM Mono,monospace" font-size="9" fill="#4a7a9b">${(s.sqft/1000).toFixed(0)}K SF</text>` : ''}`;
+  }).join('');
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%">${bars}</svg>`;
+}
+
+// ── 5. KPI CARDS ──
+function renderKPI(mine, winRate) {
+  const el = document.getElementById('chart-kpi');
+  const agreeRate = mine.length ? Math.round(mine.filter(d=>d.agreement==='Yes').length / mine.length * 100) : 0;
+  const avgRent = mine.length ? Math.round(mine.reduce((a,b)=>a+(b.annualRent||0),0) / mine.length) : 0;
+  const avgFee  = mine.length ? Math.round(mine.reduce((a,b)=>a+(b.estFee||0),0) / mine.length) : 0;
+  const activeDls = mine.filter(d=>!['Executed','Dead'].includes(d.stage)).length;
+  const totalSqft = mine.reduce((a,b)=>a+(b.sqft||0),0);
+  const outsideBroker = mine.filter(d=>d.outsideBroker).length;
+
+  // Radial gauge SVG helper
+  const gauge = (pct, color, label, value) => {
+    const r = 28, cx = 36, cy = 36;
+    const circ = 2 * Math.PI * r;
+    const dash = (pct/100) * circ;
+    return `<div style="text-align:center">
+      <svg viewBox="0 0 72 72" width="72" height="72">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg4)" stroke-width="6"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+          stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${circ/4}" stroke-linecap="round"
+          style="transition:stroke-dasharray 0.8s"/>
+        <text x="${cx}" y="${cy-2}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" fill="${color}" font-weight="300">${value}</text>
+        <text x="${cx}" y="${cy+10}" text-anchor="middle" font-family="DM Mono,monospace" font-size="7" fill="var(--text3)">${label}</text>
+      </svg>
+    </div>`;
+  };
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+      ${gauge(agreeRate, 'var(--green)', 'AGREEMENT', agreeRate+'%')}
+      ${gauge(parseInt(winRate), 'var(--gold)', 'WIN RATE', winRate+'%')}
+      ${gauge(Math.min(activeDls/10*100,100), 'var(--blue)', 'ACTIVE', activeDls)}
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value" style="color:var(--gold)">${fmtM(avgRent)}</div>
+        <div class="kpi-label">Avg Annual Rent</div>
+        <div class="kpi-sub">per deal</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" style="color:var(--green)">${fmtM(avgFee)}</div>
+        <div class="kpi-label">Avg Est. Fee</div>
+        <div class="kpi-sub">per deal</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" style="color:var(--blue)">${(totalSqft/1000).toFixed(0)}K</div>
+        <div class="kpi-label">Total Sq Ft</div>
+        <div class="kpi-sub">all deals</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" style="color:var(--orange)">${outsideBroker}</div>
+        <div class="kpi-label">Co-Brokered</div>
+        <div class="kpi-sub">deals with outside broker</div>
+      </div>
+    </div>`;
+}
+
+// ── 6. LEADERBOARD ──
+function renderLeaderboard(mine) {
+  const el = document.getElementById('chart-leaderboard');
+  const titleEl = document.getElementById('leaderboard-title');
+
+  let rows, isManager = currentUser === 'manager';
+
+  if (isManager) {
+    // Broker leaderboard for manager
+    titleEl.textContent = 'Broker Leaderboard';
+    const brokerIds = Object.keys(USERS).filter(k=>k!=='manager');
+    rows = brokerIds.map(bid => {
+      const bd = deals.filter(d=>d.broker===bid);
+      return {
+        name: USERS[bid].name,
+        sub: USERS[bid].title + ' · ' + bd.length + ' deals',
+        value: bd.reduce((s,d)=>s+(d.estFee||0),0),
+        count: bd.filter(d=>d.stage==='Executed').length
+      };
+    }).sort((a,b) => b.value - a.value).slice(0,5);
+  } else {
+    // Deal leaderboard for broker
+    titleEl.textContent = 'Deal Leaderboard';
+    rows = [...mine].sort((a,b)=>(b.estFee||0)-(a.estFee||0)).slice(0,5).map(d => (({
+      name: d.client || 'Unnamed',
+      sub: d.stage + ' · ' + (d.sqft||0).toLocaleString() + ' SF',
+      value: d.estFee || 0,
+      stage: d.stage
+    })));
+  }
+
+  const maxVal = Math.max(...rows.map(r=>r.value), 1);
+  el.innerHTML = rows.map((r, i) => `
+    <div class="lb-row" style="padding:7px 0">
+      <div class="lb-rank ${i<3?'top':''}">${i+1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${r.name}</div>
+        <div class="lb-meta">${r.sub}</div>
+        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${(r.value/maxVal*100).toFixed(1)}%"></div></div>
+      </div>
+      <div class="lb-value">${fmtM(r.value)}</div>
+    </div>`).join('') || '<div style="font-family:DM Mono,monospace;font-size:11px;color:var(--text3);padding:20px 0">No data</div>';
+}
+
+// DEAL MODAL
+function openAddDeal() {
+  editingDealId = null;
+  document.getElementById('modal-title').textContent = 'New Deal';
+  document.getElementById('modal-sub').textContent = 'ADD TRANSACTION TO PIPELINE';
+  ['f-client','f-owner','f-address','f-outside-broker','f-outside-broker-split','f-sqft','f-annual-rent','f-est-fee','f-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); 
+  document.getElementById('f-stage').value='Prospect';
+  document.getElementById('f-agreement').value='No';
+  clearSplits();
+  document.getElementById('deal-modal').classList.add('open');
+}
+
+function openEdit(id) {
+  const d = deals.find(x=>x.id===id); if(!d) return;
+  editingDealId = id;
+  document.getElementById('modal-title').textContent = 'Edit Deal';
+  document.getElementById('modal-sub').textContent = 'UPDATE TRANSACTION';
+  document.getElementById('f-client').value = d.client||'';
+  document.getElementById('f-owner').value = d.owner||'';
+  document.getElementById('f-address').value = d.address||'';
+  document.getElementById('f-outside-broker').value = d.outsideBroker||'';
+  document.getElementById('f-outside-broker-split').value = d.outsideBrokerSplit!=null?d.outsideBrokerSplit:'';
+  document.getElementById('f-stage').value = d.stage||'Prospect';
+  document.getElementById('f-sqft').value = d.sqft||'';
+  document.getElementById('f-annual-rent').value = d.annualRent||'';
+  document.getElementById('f-est-fee').value = d.estFee||'';
+  document.getElementById('f-agreement').value = d.agreement||'No';
+  document.getElementById('f-notes').value = d.notes||'';
+  clearSplits();
+  (d.partners||[]).forEach(p => addSplitRow(p.name, p.split));
+  document.getElementById('deal-modal').classList.add('open');
+}
+
+function closeDealModal() { document.getElementById('deal-modal').classList.remove('open'); }
+
+async function saveDeal() {
+  const client = document.getElementById('f-client').value.trim();
+  if(!client) { alert('Client name is required.'); return; }
+  const formDeal = {
+    broker: currentUser,
+    client,
+    owner: document.getElementById('f-owner').value.trim(),
+    address: document.getElementById('f-address').value.trim(),
+    outsideBroker: document.getElementById('f-outside-broker').value.trim(),
+    outsideBrokerSplit: parseFloat(document.getElementById('f-outside-broker-split').value)||0,
+    partners: getSplitRows(),
+    stage: document.getElementById('f-stage').value,
+    sqft: parseInt(document.getElementById('f-sqft').value)||0,
+    annualRent: parseFloat(document.getElementById('f-annual-rent').value)||0,
+    estFee: parseFloat(document.getElementById('f-est-fee').value)||0,
+    agreement: document.getElementById('f-agreement').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    created: editingDealId ? (deals.find(d=>d.id===editingDealId)||{}).created || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+  };
+  closeDealModal();
+  if (DB_MODE) {
+    // Supabase mode
+    showLoading(true);
+    try {
+      const row = toRow(formDeal);
+      if (editingDealId) {
+        await sbFetch('deals?id=eq.' + editingDealId, 'PATCH', row);
+      } else {
+        await sbFetch('deals', 'POST', row);
+      }
+      await loadDeals();
+    } catch(e) {
+      alert('Save failed: ' + e.message);
+      showLoading(false);
+    }
+  } else {
+    // localStorage mode
+    if (editingDealId) {
+      const idx = deals.findIndex(d=>d.id===editingDealId);
+      if (idx !== -1) deals[idx] = { ...formDeal, id: editingDealId };
+    } else {
+      deals.push({ ...formDeal, id: 'ls-' + Date.now() });
+    }
+    lsSave(deals);
+    renderAll();
+  }
+}
+
+async function deleteDeal(id) {
+  if(!confirm('Delete this deal?')) return;
+  if (DB_MODE) {
+    showLoading(true);
+    try {
+      await sbFetch('deals?id=eq.' + id, 'DELETE');
+      await loadDeals();
+    } catch(e) {
+      alert('Delete failed: ' + e.message);
+      showLoading(false);
+    }
+  } else {
+    deals = deals.filter(d=>d.id!==id);
+    lsSave(deals);
+    renderAll();
+  }
+}
+
+// DETAIL MODAL
+function openDetail(id) {
+  const d = deals.find(x=>x.id===id); if(!d) return;
+  const broker = USERS[d.broker];
+  const canEdit = currentUser===d.broker;
+  document.getElementById('detail-content').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+      <div>
+        <div class="modal-title">${d.client||'Unnamed Deal'}</div>
+        <div class="modal-sub">${(d.address||'—').toUpperCase()}</div>
+      </div>
+      <span class="badge ${STAGE_BADGE[d.stage]}" style="margin-top:10px;flex-shrink:0">${d.stage}</span>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Financials</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px">
+        <div>
+          <div class="detail-item-label">Annual Rent</div>
+          <div class="detail-value-large">${fmtM(d.annualRent)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${fmtFull(d.annualRent)}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Est. Total Fee</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold)">${fmtM(d.estFee)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${fmtFull(d.estFee)}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Our Fee</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--green)">${fmtM(calcOurFee(d))}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${d.outsideBrokerSplit?((100-d.outsideBrokerSplit)+'% of total'):'100% (no co-broker)'}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Outside Broker Fee</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--orange)">${d.outsideBroker&&d.outsideBrokerSplit?fmtM(calcOBFee(d)):'—'}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${d.outsideBrokerSplit?d.outsideBrokerSplit+'% of total':''}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Square Feet</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--blue)">${d.sqft?d.sqft.toLocaleString():'—'}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">square feet</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Parties</div>
+      <div class="detail-grid">
+        <div>
+          <div class="detail-item-label">Owner / Landlord</div>
+          <div class="detail-item-value">${d.owner||'—'}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Broker of Record</div>
+          <div class="detail-item-value">${broker.name}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${broker.title}</div>
+        </div>
+        <div>
+          <div class="detail-item-label">Outside Broker</div>
+          <div class="detail-item-value">${d.outsideBroker||'—'}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Agreement & Internal Splits</div>
+      <div style="margin-bottom:14px">
+        <div class="detail-item-label">Agreement Signed</div>
+        <div style="margin-top:4px"><span class="${d.agreement==='Yes'?'agree-yes':'agree-no'}">${d.agreement||'No'}</span></div>
+      </div>
+      ${buildSplitDetail(d)}
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-label">Deal Notes</div>
+      <div class="notes-box">${d.notes||'No notes recorded.'}</div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap">
+      ${canEdit?`<button class="btn-primary" onclick="closeDetailModal();openEdit(${d.id})">Edit Deal</button>`:''}
+      ${d.stage==='Executed'?`<button class="btn-primary" style="background:var(--green);color:#0d0f11" onclick="generateInvoice(${d.id})">&#9654; Generate Invoice</button>`:''}
+      <button class="btn-secondary" onclick="closeDetailModal()">Close</button>
+    </div>`;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+
+// ═══════════════════════════════════════════════════════
+// MULTI-PARTNER SPLITS
+// ═══════════════════════════════════════════════════════
+let splitRowCount = 0;
+
+function clearSplits() {
+  document.getElementById('splits-container').innerHTML = '';
+  splitRowCount = 0;
+  updateSplitBar();
+}
+
+function addSplitRow(name='', pct='') {
+  const id = ++splitRowCount;
+  const row = document.createElement('div');
+  row.id = 'split-row-' + id;
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 100px 36px;gap:8px;margin-bottom:8px;align-items:center';
+  row.innerHTML = `
+    <input class="form-control" placeholder="Partner name" value="${name}"
+      style="margin:0" oninput="updateSplitBar()"
+      id="split-name-${id}">
+    <div style="position:relative">
+      <input class="form-control" type="number" min="0" max="99" placeholder="%" value="${pct}"
+        style="margin:0;padding-right:24px" oninput="updateSplitBar()"
+        id="split-pct-${id}">
+      <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);pointer-events:none">%</span>
+    </div>
+    <button type="button" onclick="removeSplitRow(${id})"
+      style="background:transparent;border:1px solid var(--border);color:var(--text3);width:36px;height:36px;cursor:pointer;font-size:16px;line-height:1;transition:all 0.2s"
+      onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">×</button>`;
+  document.getElementById('splits-container').appendChild(row);
+  updateSplitBar();
+}
+
+function removeSplitRow(id) {
+  const el = document.getElementById('split-row-' + id);
+  if (el) el.remove();
+  updateSplitBar();
+}
+
+function getSplitRows() {
+  const rows = document.getElementById('splits-container').querySelectorAll('[id^="split-row-"]');
+  const partners = [];
+  rows.forEach(row => {
+    const idNum = row.id.replace('split-row-', '');
+    const name = (document.getElementById('split-name-' + idNum)?.value || '').trim();
+    const pct  = parseFloat(document.getElementById('split-pct-' + idNum)?.value) || 0;
+    if (name) partners.push({ name, split: pct });
+  });
+  return partners;
+}
+
+function updateSplitBar() {
+  const rows = document.getElementById('splits-container').querySelectorAll('[id^="split-row-"]');
+  const bar = document.getElementById('split-total-bar');
+  const fill = document.getElementById('split-total-fill');
+  const pctLabel = document.getElementById('split-total-pct');
+  const warning = document.getElementById('split-total-warning');
+  if (!rows.length) { if(bar) bar.style.display='none'; return; }
+  if(bar) bar.style.display='block';
+  let total = 0;
+  rows.forEach(row => {
+    const idNum = row.id.replace('split-row-', '');
+    total += parseFloat(document.getElementById('split-pct-' + idNum)?.value) || 0;
+  });
+  const over = total >= 100;
+  if(fill) { fill.style.width = Math.min(total,100)+'%'; fill.style.background = over ? 'var(--red)' : total > 80 ? 'var(--orange)' : 'var(--gold)'; }
+  if(pctLabel) { pctLabel.textContent = total.toFixed(0)+'% to partners · '+(100-total).toFixed(0)+'% lead'; pctLabel.style.color = over ? 'var(--red)' : 'var(--gold)'; }
+  if(warning) warning.style.display = over ? 'block' : 'none';
+}
+
+function buildSplitDetail(d) {
+  const partners = d.partners || [];
+  if (!partners.length) {
+    return `<div class="detail-item-label">Internal Partners</div>
+      <div class="detail-item-value" style="color:var(--text3);font-family:'DM Mono',monospace;font-size:12px">No internal partners — lead broker retains 100%</div>`;
+  }
+  const totalPartnerPct = partners.reduce((s,p) => s + p.split, 0);
+  const leadPct = 100 - totalPartnerPct;
+  const estFee = d.estFee || 0;
+  const brokerName = USERS[d.broker]?.name || 'Lead Broker';
+  let rows = `<div style="background:var(--bg3);border:1px solid var(--border);overflow:hidden">
+    <div style="display:grid;grid-template-columns:1fr 60px 100px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg4)">
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text3)">PARTNER</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text3);text-align:right">SPLIT</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text3);text-align:right">EST. SHARE</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 60px 100px;padding:10px 14px;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px;font-weight:600">${brokerName} <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);background:var(--gold-dim);padding:1px 6px;border:1px solid rgba(201,168,76,0.3);border-radius:2px;margin-left:4px">LEAD</span></span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);text-align:right">${leadPct.toFixed(0)}%</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);text-align:right">${estFee ? '$'+Math.round(estFee*(leadPct/100)).toLocaleString() : '—'}</span>
+    </div>`;
+  partners.forEach(p => {
+    rows += `<div style="display:grid;grid-template-columns:1fr 60px 100px;padding:10px 14px;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px;color:var(--text2)">${p.name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);text-align:right">${p.split}%</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);text-align:right">${estFee ? '$'+Math.round(estFee*(p.split/100)).toLocaleString() : '—'}</span>
+    </div>`;
+  });
+  // allocation bar
+  const segments = [{name:brokerName, pct:leadPct, color:'var(--gold)'}].concat(
+    partners.map((p,i) => ({name:p.name, pct:p.split, color:['var(--blue)','var(--purple)','var(--orange)','var(--green)'][i%4]}))
+  );
+  const barSegs = segments.map(s => `<div title="${s.name}: ${s.pct}%" style="flex:${s.pct};background:${s.color};opacity:0.8;min-width:2px"></div>`).join('');
+  rows += `<div style="padding:12px 14px">
+    <div style="height:6px;display:flex;gap:2px;border-radius:3px;overflow:hidden">${barSegs}</div>
+  </div></div>`;
+  return rows;
+}
+
+
+
+// ═══════════════════════════════════════════════════════
+// EXPORT TO XLS
+// ═══════════════════════════════════════════════════════
+function exportToXLS() {
+  if (typeof XLSX === 'undefined') {
+    alert('SheetJS library not loaded. Please check your internet connection.');
+    return;
+  }
+
+  const data = getMyDeals();
+  const wb = XLSX.utils.book_new();
+
+  // ── Sheet 1: Full Pipeline ──
+  const pipelineRows = data.map(d => {
+    const broker = USERS[d.broker];
+    const partners = d.partners || [];
+    const totalPartnerPct = partners.reduce((s,p) => s + p.split, 0);
+    const leadPct = 100 - totalPartnerPct;
+    const partnerNames = partners.map(p => p.name).join('; ');
+    const partnerSplits = partners.map(p => p.name + ' ' + p.split + '%').join('; ');
+    return {
+      'Client Name':        d.client || '',
+      'Address':            d.address || '',
+      'Owner':              d.owner || '',
+      'Deal Stage':         d.stage || '',
+      'Square Feet':        d.sqft || 0,
+      'Annual Rent ($)':    d.annualRent || 0,
+      'Est. Total Fee ($)': d.estFee || 0,
+      'Our Fee ($)':        calcOurFee(d),
+      'Outside Broker Fee ($)': calcOBFee(d),
+      'Outside Broker Split (%)': d.outsideBrokerSplit || 0,
+      'Agreement':          d.agreement || 'No',
+      'Outside Broker':     d.outsideBroker || '',
+      'Internal Partners':  partnerNames,
+      'Lead Broker':        broker.name,
+      'Lead Split (%)':     leadPct,
+      'Partner Splits':     partnerSplits,
+      'Deal Notes':         d.notes || '',
+      'Date Created':       d.created || '',
+    };
+  });
+
+  const ws1 = XLSX.utils.json_to_sheet(pipelineRows);
+
+  // Column widths
+  ws1['!cols'] = [
+    {wch:24}, {wch:36}, {wch:24}, {wch:14}, {wch:12},
+    {wch:16}, {wch:16}, {wch:11}, {wch:24}, {wch:28},
+    {wch:20}, {wch:13}, {wch:28}, {wch:40}, {wch:14}
+  ];
+
+  // Style header row (row 1)
+  const headerRange = XLSX.utils.decode_range(ws1['!ref']);
+  for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+    const cellAddr = XLSX.utils.encode_cell({r:0, c:C});
+    if (!ws1[cellAddr]) continue;
+    ws1[cellAddr].s = {
+      font: { bold: true, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1E4A72' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true }
+    };
+  }
+
+  // Style data rows
+  for (let R = 1; R <= headerRange.e.r; R++) {
+    const deal = data[R-1];
+    const rowBg = R % 2 === 0 ? 'F4F4F6' : 'FFFFFF';
+    const stageBg = {
+      'Prospect':     'E8F0FE',
+      'LOI':          'FEF3E8',
+      'Lease':        'F3EEFE',
+      'Executed':     'E8F9F1',
+      'Dead':         'FEE8E8'
+    }[deal?.stage] || 'FFFFFF';
+
+    for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+      const cellAddr = XLSX.utils.encode_cell({r:R, c:C});
+      if (!ws1[cellAddr]) ws1[cellAddr] = {v:'', t:'s'};
+      const isStageCol = C === 3;
+      const isCurrency = C === 5 || C === 6;
+      ws1[cellAddr].s = {
+        fill: { fgColor: { rgb: isStageCol ? stageBg : rowBg } },
+        alignment: { vertical: 'center', wrapText: C === 13 },
+        numFmt: isCurrency ? '"$"#,##0' : C === 4 ? '#,##0' : undefined
+      };
+    }
+  }
+
+  // Freeze header row
+  ws1['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  XLSX.utils.book_append_sheet(wb, ws1, 'Pipeline');
+
+  // ── Sheet 2: Summary by Stage ──
+  const stages = ['Prospect','LOI','Lease','Executed','Dead'];
+  const summaryRows = stages.map(s => {
+    const stageDeals = data.filter(d => d.stage === s);
+    return {
+      'Stage':              s,
+      'Deal Count':         stageDeals.length,
+      'Total Sq Ft':        stageDeals.reduce((a,d)=>a+(d.sqft||0),0),
+      'Total Annual Rent':  stageDeals.reduce((a,d)=>a+(d.annualRent||0),0),
+      'Total Est. Fees':    stageDeals.reduce((a,d)=>a+(d.estFee||0),0),
+      'Agreements Signed':  stageDeals.filter(d=>d.agreement==='Yes').length,
+    };
+  });
+
+  // Totals row
+  summaryRows.push({
+    'Stage': 'TOTAL',
+    'Deal Count':         data.length,
+    'Total Sq Ft':        data.reduce((a,d)=>a+(d.sqft||0),0),
+    'Total Annual Rent':  data.reduce((a,d)=>a+(d.annualRent||0),0),
+    'Total Est. Fees':    data.reduce((a,d)=>a+(d.estFee||0),0),
+    'Agreements Signed':  data.filter(d=>d.agreement==='Yes').length,
+  });
+
+  const ws2 = XLSX.utils.json_to_sheet(summaryRows);
+  ws2['!cols'] = [{wch:16},{wch:12},{wch:16},{wch:20},{wch:18},{wch:18}];
+  ws2['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  // Header styles for summary
+  const sumRange = XLSX.utils.decode_range(ws2['!ref']);
+  for (let C = sumRange.s.c; C <= sumRange.e.c; C++) {
+    const cellAddr = XLSX.utils.encode_cell({r:0, c:C});
+    if (ws2[cellAddr]) ws2[cellAddr].s = {
+      font: { bold: true, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1E4A72' } },
+      alignment: { horizontal: 'center' }
+    };
+  }
+  // Totals row bold + gold
+  const totalRow = summaryRows.length; // 0-indexed + header = length
+  for (let C = sumRange.s.c; C <= sumRange.e.c; C++) {
+    const cellAddr = XLSX.utils.encode_cell({r:totalRow, c:C});
+    if (ws2[cellAddr]) ws2[cellAddr].s = {
+      font: { bold: true, color: { rgb: '0D0F11' } },
+      fill: { fgColor: { rgb: 'C9A84C' } },
+    };
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws2, 'Summary by Stage');
+
+  // ── Sheet 3: Fee Splits Detail ──
+  const splitRows = [];
+  data.forEach(d => {
+    const broker = USERS[d.broker];
+    const partners = d.partners || [];
+    const totalPartnerPct = partners.reduce((s,p) => s + p.split, 0);
+    const leadPct = 100 - totalPartnerPct;
+    const fee = d.estFee || 0;
+    // Lead broker row
+    splitRows.push({
+      'Deal / Client':  d.client || '',
+      'Address':        d.address || '',
+      'Stage':          d.stage || '',
+      'Est. Fee ($)':   fee,
+      'Person':         broker.name,
+      'Role':           'Lead Broker',
+      'Split (%)':      leadPct,
+      'Share ($)':      Math.round(fee * leadPct / 100),
+    });
+    // Partner rows
+    partners.forEach(p => {
+      splitRows.push({
+        'Deal / Client':  d.client || '',
+        'Address':        d.address || '',
+        'Stage':          d.stage || '',
+        'Est. Fee ($)':   fee,
+        'Person':         p.name,
+        'Role':           'Internal Partner',
+        'Split (%)':      p.split,
+        'Share ($)':      Math.round(fee * p.split / 100),
+      });
+    });
+  });
+
+  const ws3 = XLSX.utils.json_to_sheet(splitRows.length ? splitRows : [{'Note':'No split data available'}]);
+  ws3['!cols'] = [{wch:24},{wch:32},{wch:12},{wch:14},{wch:20},{wch:16},{wch:11},{wch:14}];
+  ws3['!freeze'] = { xSplit: 0, ySplit: 1 };
+
+  const splitRange = XLSX.utils.decode_range(ws3['!ref'] || 'A1');
+  for (let C = splitRange.s.c; C <= splitRange.e.c; C++) {
+    const cellAddr = XLSX.utils.encode_cell({r:0, c:C});
+    if (ws3[cellAddr]) ws3[cellAddr].s = {
+      font: { bold: true, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1E4A72' } },
+      alignment: { horizontal: 'center' }
+    };
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws3, 'Fee Splits');
+
+  // ── Export ──
+  const today = new Date().toISOString().slice(0,10);
+  const userName = USERS[currentUser]?.name?.replace(/ +/g,'_') || 'broker';
+  const filename = `PSProcessing_Pipeline_${userName}_${today}.xlsx`;
+
+  XLSX.writeFile(wb, filename, { bookType: 'xlsx', type: 'binary', cellStyles: true });
+}
+
+// ═══════════════════════════════════════════════════════
+// INVOICE GENERATION
+// ═══════════════════════════════════════════════════════
+let invoiceCounter = 1000;
+
+function generateInvoice(dealId) {
+  const d = deals.find(x => x.id === dealId);
+  if (!d) return;
+
+  const broker = USERS[d.broker];
+  const invoiceNum = 'INV-' + (++invoiceCounter);
+  const today = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const dueDate = new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  const partners = d.partners || [];
+  const totalPartnerPct = partners.reduce((s,p) => s + p.split, 0);
+  const leadPct = 100 - totalPartnerPct;
+  const fee = d.estFee || 0;
+
+  // Build line items
+  const sqftStr = d.sqft ? d.sqft.toLocaleString() + ' SF' : 'N/A';
+  const rentStr = d.annualRent ? '$' + d.annualRent.toLocaleString() : 'N/A';
+
+  // Build split rows
+  let splitsHtml = '';
+  if (partners.length > 0) {
+    splitsHtml = `<div class="inv-splits">
+      <div class="inv-splits-title">Fee Distribution — Internal Splits</div>
+      <div class="inv-split-row">
+        <span class="inv-split-name">${broker.name} <em style="font-size:11px;color:#aaa;font-weight:400">(Lead Broker)</em></span>
+        <span class="inv-split-pct">${leadPct.toFixed(0)}%</span>
+        <span class="inv-split-amount">$${Math.round(fee * leadPct / 100).toLocaleString()}</span>
+      </div>
+      ${partners.map(p => `<div class="inv-split-row">
+        <span class="inv-split-name">${p.name}</span>
+        <span class="inv-split-pct">${p.split}%</span>
+        <span class="inv-split-amount">$${Math.round(fee * p.split / 100).toLocaleString()}</span>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // Notes
+  const notesHtml = d.notes ? `<div class="inv-notes">
+    <div class="inv-notes-title">Deal Notes</div>
+    <div class="inv-notes-body">${d.notes}</div>
+  </div>` : '';
+
+  document.getElementById('invoice-doc').innerHTML = `
+    <div class="inv-header">
+      <div>
+        <div class="inv-firm-name">PS Processing</div>
+        <div class="inv-firm-tag">Commercial Real Estate Brokerage</div>
+        <div class="inv-firm-contact">
+          ${broker.name} · ${broker.title}<br>
+          psprocessing.com<br>
+          invoices@psprocessing.com
+        </div>
+      </div>
+      <div class="inv-meta">
+        <div class="inv-label-lg">Invoice</div>
+        <div class="inv-number">${invoiceNum}</div>
+        <div class="inv-date">Date: ${today}</div>
+        <div class="inv-date" style="color:#c9a84c;font-weight:600;margin-top:4px">Due: ${dueDate}</div>
+      </div>
+    </div>
+
+    <div class="inv-parties">
+      <div>
+        <div class="inv-party-label">Bill To</div>
+        <div class="inv-party-name">${d.client || 'Client'}</div>
+        <div class="inv-party-detail">
+          ${d.address || ''}<br>
+          ${d.owner ? 'c/o ' + d.owner : ''}
+        </div>
+      </div>
+      <div>
+        <div class="inv-party-label">From</div>
+        <div class="inv-party-name">PS Processing</div>
+        <div class="inv-party-detail">
+          ${broker.name}<br>
+          ${broker.title}<br>
+          ${d.outsideBroker ? 'Co-broker: ' + d.outsideBroker : 'Sole Broker of Record'}
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-property-box">
+      <div class="inv-property-label">Property</div>
+      <div class="inv-property-address">${d.address || '—'}</div>
+      <div class="inv-property-meta">
+        ${sqftStr} &nbsp;·&nbsp; Annual Rent: ${rentStr}
+        ${d.outsideBroker ? '&nbsp;·&nbsp; Outside Broker: ' + d.outsideBroker : ''}
+      </div>
+    </div>
+
+    <table class="inv-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Details</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong>Brokerage Commission — Est. Total Fee</strong><br>
+            <span style="font-size:12px;color:#777">Lease execution — ${d.stage}</span>
+          </td>
+          <td>
+            <span style="font-size:12px;color:#777">
+              ${sqftStr}<br>
+              Annual rent: ${rentStr}
+            </span>
+          </td>
+          <td>$${fee.toLocaleString()}</td>
+        </tr>
+        ${d.outsideBrokerSplit ? '<tr><td><strong>Less: Outside Broker Portion</strong><br><span style="font-size:12px;color:#777">' + (d.outsideBroker||'Outside Broker') + ' — ' + d.outsideBrokerSplit + '%</span></td><td></td><td style="color:#c96a1a">-$' + calcOBFee(d).toLocaleString() + '</td></tr><tr class="subtotal-row"><td colspan="2">PS Processing Net Fee</td><td>$' + calcOurFee(d).toLocaleString() + '</td></tr>' : ''}
+        <tr class="subtotal-row">
+          <td colspan="2">Subtotal</td>
+          <td>$${fee.toLocaleString()}</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="2">TOTAL DUE</td>
+          <td>$${fee.toLocaleString()}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    ${splitsHtml}
+    ${notesHtml}
+
+    <div class="inv-footer">
+      <div class="inv-footer-left">
+        Payment due within 30 days of invoice date.<br>
+        Please reference invoice number <strong>${invoiceNum}</strong> with payment.<br>
+        Wire instructions available upon request.
+      </div>
+      <div class="inv-footer-right">
+        <div class="inv-footer-stamp">Executed</div>
+      </div>
+    </div>
+  `;
+
+  closeDetailModal();
+  document.getElementById('invoice-overlay').classList.add('open');
+}
+
+function printInvoice() {
+  window.print();
+}
+
+function closeInvoice() {
+  document.getElementById('invoice-overlay').classList.remove('open');
+}
+
+function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); }
+
+// ═══════════════════════════════════════════════════════
+// PASSWORD MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+function checkPwStrength(pw) {
+  const bar  = document.getElementById('pw-strength-bar');
+  const txt  = document.getElementById('pw-strength-text');
+  if (!bar) return;
+  if (!pw) { bar.style.width='0'; bar.style.background=''; txt.textContent=''; return; }
+  let score = 0;
+  if (pw.length >= 6)  score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^a-zA-Z0-9]/.test(pw)) score++;
+  const levels = [
+    { label:'Too short', color:'var(--red)',    pct:'20%' },
+    { label:'Weak',      color:'var(--red)',    pct:'35%' },
+    { label:'Fair',      color:'var(--orange)', pct:'55%' },
+    { label:'Good',      color:'var(--gold)',   pct:'75%' },
+    { label:'Strong',    color:'var(--green)',  pct:'100%'},
+  ];
+  const lvl = levels[Math.min(score, 4)];
+  bar.style.width = lvl.pct;
+  bar.style.background = lvl.color;
+  txt.textContent = lvl.label;
+  txt.style.color = lvl.color;
+}
+
+function openChangePw() {
+  document.getElementById('cp-current').value = '';
+  document.getElementById('cp-new').value = '';
+  document.getElementById('cp-confirm').value = '';
+  document.getElementById('cp-error').textContent = '';
+  const bar = document.getElementById('pw-strength-bar');
+  if (bar) { bar.style.width='0'; document.getElementById('pw-strength-text').textContent=''; }
+  document.getElementById('change-pw-sub').textContent = 'UPDATE YOUR PASSWORD — ' + (USERS[currentUser]?.name || '').toUpperCase();
+  document.getElementById('change-pw-modal').classList.add('open');
+}
+
+function saveChangedPw() {
+  const current  = document.getElementById('cp-current').value;
+  const newPw    = document.getElementById('cp-new').value;
+  const confirm  = document.getElementById('cp-confirm').value;
+  const errEl    = document.getElementById('cp-error');
+  errEl.textContent = '';
+
+  const uid = currentUser === 'manager' ? 'manager' : currentUser;
+  const correctCurrent = PASSWORDS[uid] || '';
+  if (current !== correctCurrent) { errEl.textContent = 'Current password is incorrect.'; return; }
+  if (newPw.length < 4) { errEl.textContent = 'New password must be at least 4 characters.'; return; }
+  if (newPw !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+
+  PASSWORDS[uid] = newPw;
+  // If Matthew, also update b9
+  if (uid === 'manager') PASSWORDS['b9'] = newPw;
+  if (uid === 'b9') PASSWORDS['manager'] = newPw;
+  savePasswords();
+  document.getElementById('change-pw-modal').classList.remove('open');
+  alert('Password updated successfully!');
+}
+
+function openManagerReset() {
+  document.getElementById('reset-broker-select').value = '';
+  document.getElementById('reset-new-pw').value = '';
+  document.getElementById('reset-pw-error').textContent = '';
+  document.getElementById('reset-pw-modal').classList.add('open');
+}
+
+function doManagerReset() {
+  const uid   = document.getElementById('reset-broker-select').value;
+  const newPw = document.getElementById('reset-new-pw').value;
+  const errEl = document.getElementById('reset-pw-error');
+  errEl.textContent = '';
+  if (!uid) { errEl.textContent = 'Please select a broker.'; return; }
+  if (newPw.length < 4) { errEl.textContent = 'Password must be at least 4 characters.'; return; }
+  PASSWORDS[uid] = newPw;
+  if (uid === 'b9') PASSWORDS['manager'] = newPw; // Matthew sync
+  savePasswords();
+  document.getElementById('reset-pw-modal').classList.remove('open');
+  alert(USERS[uid].name + "'s password has been reset.");
+}
+
+// ═══════════════════════════════════════════════════════
+// DOM EVENT WIRING — runs after all functions are defined
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Login
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  document.getElementById('login-name').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+
+  // Nav
+  document.getElementById('nav-pipeline').addEventListener('click', function(){ showPage('pipeline', this); });
+  document.getElementById('btn-overview').addEventListener('click', function(){ showPage('overview', this); });
+  document.getElementById('nav-analytics').addEventListener('click', function(){ showPage('analytics', this); });
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', doLogout);
+
+  // Pipeline actions
+  document.getElementById('add-deal-btn').addEventListener('click', openAddDeal);
+  document.getElementById('export-btn').addEventListener('click', exportToXLS);
+
+  // Filter chips
+  document.getElementById('filter-all').addEventListener('click',      function(){ setFilter('all',      this); });
+  document.getElementById('filter-prospect').addEventListener('click', function(){ setFilter('Prospect', this); });
+  document.getElementById('filter-loi').addEventListener('click',      function(){ setFilter('LOI',      this); });
+  document.getElementById('filter-lease').addEventListener('click',    function(){ setFilter('Lease',    this); });
+  document.getElementById('filter-executed').addEventListener('click', function(){ setFilter('Executed', this); });
+  document.getElementById('filter-dead').addEventListener('click',     function(){ setFilter('Dead',     this); });
+
+  // Search
+  document.getElementById('search-box').addEventListener('input', renderTable);
+
+  // Deal modal
+  document.getElementById('deal-modal-close').addEventListener('click', closeDealModal);
+  document.getElementById('save-deal-btn').addEventListener('click', saveDeal);
+  document.getElementById('cancel-deal-btn').addEventListener('click', closeDealModal);
+  document.getElementById('deal-modal').addEventListener('click', function(e){ if(e.target===this) closeDealModal(); });
+
+  // Detail modal
+  document.getElementById('detail-modal-close').addEventListener('click', closeDetailModal);
+  document.getElementById('detail-modal').addEventListener('click', function(e){ if(e.target===this) closeDetailModal(); });
+
+  // Invoice overlay
+  document.getElementById('inv-print-btn').addEventListener('click', printInvoice);
+  document.getElementById('inv-close-btn').addEventListener('click', closeInvoice);
+  document.getElementById('invoice-overlay').addEventListener('click', function(e){ if(e.target===this) closeInvoice(); });
+
+  // Supabase is pre-configured — connect automatically
+  setDbStatus('connected');
+
+  // Load saved passwords from localStorage
+  loadPasswords();
+
+  // Forgot password link
+  document.getElementById('forgot-pw-link').addEventListener('click', function() {
+    document.getElementById('forgot-pw-modal').classList.add('open');
+  });
+
+  // Change password button (topbar)
+  document.getElementById('change-pw-btn').addEventListener('click', openChangePw);
+
+  // Save changed password
+  document.getElementById('save-pw-btn').addEventListener('click', saveChangedPw);
+
+  // Manager reset password button (Team Overview)
+  document.getElementById('manager-reset-pw-btn').addEventListener('click', openManagerReset);
+  document.getElementById('do-reset-pw-btn').addEventListener('click', doManagerReset);
+
+  // Close forgot-pw modal on overlay click
+  document.getElementById('forgot-pw-modal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+  document.getElementById('change-pw-modal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+  document.getElementById('reset-pw-modal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+});
+</script>
+
+<!-- ═══════════════ INVOICE OVERLAY ═══════════════ -->
+<div id="invoice-overlay">
+  <div class="invoice-shell">
+    <div class="invoice-toolbar">
+      <span class="invoice-toolbar-title">Invoice Preview</span>
+      <div class="invoice-toolbar-actions">
+        <button class="inv-btn inv-btn-print" id="inv-print-btn">⬇ Download / Print PDF</button>
+        <button class="inv-btn inv-btn-close" id="inv-close-btn">✕ Close</button>
+      </div>
+    </div>
+    <div id="invoice-doc"></div>
+  </div>
+</div>
+</body>
+</html>
